@@ -1,3 +1,7 @@
+export enum DayOfWeek {
+  SHABBAT = 6,
+}
+
 export abstract class JDate {
   private hdn: number;
 
@@ -11,8 +15,28 @@ export abstract class JDate {
     }
   }
 
+  protected setHdn(hdn: number) {
+    this.hdn = hdn;
+  }
+
+  public lte(other: JDate): boolean {
+    return this.hdn <= other.hdn;
+  }
+
+  public gt(other: JDate): boolean {
+    return this.hdn > other.hdn;
+  }
+
+  public minus(other: JDate): number {
+    return this.hdn - other.hdn;
+  }
+
   protected getHdn(): number {
     return this.hdn;
+  }
+
+  public getDayOfWeek(): DayOfWeek {
+    return this.hdn % 7;
   }
 
   public abstract getYear(): number;
@@ -20,6 +44,9 @@ export abstract class JDate {
   public abstract getDay(): number;
 
   public toString(): string {
-    return `${this.getYear()}-${`${this.getMonth()}`.padStart(2, '0')}-${`${this.getDay()}`.padStart(2, '0')}`;
+    return `${this.getYear()}-${`${this.getMonth()}`.padStart(
+      2,
+      "0"
+    )}-${`${this.getDay()}`.padStart(2, "0")}`;
   }
 }

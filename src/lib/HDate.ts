@@ -39,10 +39,46 @@ export class HDate extends JDate {
   private day: number;
   private yearType: number;
 
-  public constructor(jdate: JDate) {
-    super(jdate);
+  constructor(jdate: JDate);
+  constructor(hdn: number);
+  constructor(year: number, month: number, day: number);
+  constructor(param: number | JDate, month?: number, day?: number) {
+    if (typeof param === "number") {
+      if (month !== undefined) {
+        super(HDate.hdnForYmd(param, month, day));
+      } else {
+        super(param);
+      }
+    } else {
+      super(param);
+    }
     this.calcFromHdn();
   }
+
+  private static hdnForYmd(year: number, month: number, day: number): number {
+    let _hdn = HDate.roshHashanaDay(year);
+    const nextRH = HDate.roshHashanaDay(year + 1);
+    const yearType = ((nextRH - _hdn) % 10) - 2;
+    let hmonth = HDateMonth.TISHRI;
+    const hyear = year;
+
+    const isEmbolismic = HDate.embolismicYear(hyear);
+    const nbMonths = isEmbolismic ? 13 : 12;
+
+    if (month > nbMonths) month = nbMonths;
+
+    while (hmonth != month) {
+      _hdn += HDate.monthLength(hyear, hmonth, yearType);
+      hmonth = hmonth + 1 > nbMonths ? 1 : hmonth + 1;
+    }
+    const getMonthLength = HDate.monthLength(hyear, hmonth, yearType);
+    if (day > getMonthLength) {
+      day = getMonthLength;
+    }
+    _hdn += day - 1;
+    return _hdn;
+  }
+
   public static today(): HDate {
     return new HDate(GDate.today());
   }
@@ -100,7 +136,10 @@ export class HDate extends JDate {
     return lResult;
   }
 
-  private calcFromHdn() {
+  private calcFromHdn(offsetBy?: number) {
+    if (offsetBy) {
+      this.setHdn(this.getHdn() + (offsetBy ?? 0));
+    }
     const hdn = this.getHdn();
 
     //Guess the approximate (greater) year of the specified Hebrew Day Number:
@@ -184,7 +223,40 @@ export class HDate extends JDate {
     return (12 * hyear + 17) % 19 >= 12;
   }
 
-  static convert(gDate: GDate) {
-    return new HDate(gDate);
+  static convert(jdate: JDate) {
+    return new HDate(jdate);
+  }
+
+  public plus(days: number): HDate {
+    const hdate = HDate.convert(this);
+    hdate.calcFromHdn(days);
+    return hdate;
+  }
+
+  public isEmbolismic(): boolean {
+    return HDate.embolismicYear(this.year);
+  }
+
+  public getYearLength(): number {
+    switch (this.yearType) {
+      case HDateYearType.CHASERA:
+        return this.isEmbolismic() ? 383 : 353;
+      case HDateYearType.SDURA:
+        return this.isEmbolismic() ? 384 : 354;
+      case HDateYearType.SHLEMA:
+        return this.isEmbolismic() ? 385 : 355;
+      default:
+        return 0;
+    }
+  }
+
+  public add(days: number): HDate {
+    this.calcFromHdn(days);
+    return this;
+  }
+
+  public setYear(year: number): void {
+    this.setHdn(HDate.hdnForYmd(year, this.month, this.day));
+    this.calcFromHdn();
   }
 }
