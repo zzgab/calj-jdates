@@ -280,6 +280,14 @@ export class Parasha {
     "וזאת-הברכה",
   ] as const;
 
+  private static specialParashaNames = [
+      "שקלים",
+      "זכור",
+      "פרה",
+      "החודש",
+      "הגדול",
+  ] as const;
+
   public static getSidraHebrewName(n: number): string | null {
     if (0 <= n && n <= 53) return Parasha.hebrewSidraNames[n];
     return null;
@@ -297,5 +305,12 @@ export class Parasha {
         this.parshiot[0]
       )} - ${Parasha.getSidraHebrewName(this.parshiot[1])}`;
     }
+  }
+
+  public getSpecialName(): string {
+    if (!this.special) {
+      return undefined;
+    }
+    return Parasha.specialParashaNames[-this.special - 1];
   }
 }

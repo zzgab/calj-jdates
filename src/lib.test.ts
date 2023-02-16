@@ -12,4 +12,8 @@ describe("Parasha", () => {
     const parasha = new Parasha(g, true);
     expect(parasha.getHebrewName()).toEqual("משפטים");
   });
+
+  it('should have special parasha', () => {
+    expect(new Parasha(new GDate(2023, 3, 2), true).getSpecialName()).toEqual("זכור");
+  });
 });
