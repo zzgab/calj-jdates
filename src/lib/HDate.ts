@@ -2,7 +2,7 @@ import { JDate } from "./JDate";
 import { GDate } from "./GDate";
 
 const uday = 25920; // 24 * 1080
-const Tsyn = 765433; //29 * $uday + 12 * 1080 + 793
+const Tsyn = 765433; //29 * uday + 12 * 1080 + 793
 const Ttohu = 5604; //5 * 1080 + 204;
 const Tgatarad = 9924; //9 * 1080 + 204;
 const Tzaken = 19440; //18 * 1080;
@@ -34,14 +34,10 @@ export enum HDateYearType {
 const cacheRH = new Map<number, number>();
 
 export class HDate extends JDate {
-  private year: number;
-  private month: number;
-  private day: number;
-  private yearType: number;
+  public constructor(jdate: JDate);
+  public constructor(day: number, month: number, year: number);
 
-  constructor(jdate: JDate);
   constructor(hdn: number);
-  constructor(day: number, month: number, year: number);
   constructor(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
     if (typeof dayOrHdnOrJdate === "number") {
       if (month !== undefined) {
@@ -54,6 +50,127 @@ export class HDate extends JDate {
     }
     this.calcFromHdn();
   }
+
+  public static today(): HDate {
+    return new HDate(GDate.today());
+  }
+
+  public getYear(): number {
+    return this.year;
+  }
+
+  public getMonth(): number {
+    return this.month;
+  }
+
+  public getDay(): number {
+    return this.day;
+  }
+
+  public getMonthLength(): number {
+    return HDate.monthLength(this.year, this.month, this.yearType);
+  }
+
+  public getNumberOfMonths(): number {
+    return HDate.monthsInYear(this.year);
+  }
+
+  public static monthsInYear(hyear: number): number {
+    return HDate.embolismicYear(hyear) ? 13 : 12;
+  }
+
+  public static monthLength(
+    hyear: number,
+    hmonth: number,
+    yearType: number
+  ): number {
+    switch (hmonth) {
+      case HDateMonth.TISHRI:
+      case HDateMonth.AV:
+      case HDateMonth.NISSAN:
+      case HDateMonth.SIVAN:
+      case HDateMonth.SHVAT:
+        return 30;
+      case HDateMonth.CHESHVAN:
+        if (yearType == HDateYearType.SHLEMA) {
+          return 30;
+        }
+        return 29;
+      case HDateMonth.KISLEV:
+        if (yearType == HDateYearType.CHASERA) {
+          return 29;
+        }
+        return 30;
+      case HDateMonth.TEVET:
+      case HDateMonth.ADAR2:
+      case HDateMonth.IYAR:
+      case HDateMonth.TAMUZ:
+      case HDateMonth.ELUL:
+        return 29;
+      case HDateMonth.ADAR:
+        return HDate.embolismicYear(hyear) ? 30 : 29;
+      default:
+        return 0; //Impossible.
+    }
+  }
+
+  public static embolismicYear(hyear: number): boolean {
+    return (12 * hyear + 17) % 19 >= 12;
+  }
+
+  public static convert(jdate: JDate) {
+    return new HDate(jdate);
+  }
+
+  public plus(days: number): HDate {
+    const hdate = HDate.convert(this);
+    hdate.calcFromHdn(days);
+    return hdate;
+  }
+
+  public isEmbolismic(): boolean {
+    return HDate.embolismicYear(this.year);
+  }
+
+  public getYearLength(): number {
+    switch (this.yearType) {
+      case HDateYearType.CHASERA:
+        return this.isEmbolismic() ? 383 : 353;
+      case HDateYearType.SDURA:
+        return this.isEmbolismic() ? 384 : 354;
+      case HDateYearType.SHLEMA:
+        return this.isEmbolismic() ? 385 : 355;
+      default:
+        return 0;
+    }
+  }
+
+  public getMonthName(): string {
+    return HDate.monthNames[
+      this.month !== 12
+        ? this.month - 1
+        : this.getNumberOfMonths() === 12
+        ? 11
+        : 13
+    ];
+  }
+
+  public static monthNames = [
+    "ניסן",
+    "אייר",
+    "סיון",
+    "תמוז",
+    "אב",
+    "אלול",
+    "תשרי",
+    "חשון",
+    "כסלו",
+    "טבת",
+    "שבט",
+    "אדר",
+    "אדר ב",
+    "אדר א",
+  ] as const;
 
   private static hdnForYmd(year: number, month: number, day: number): number {
     let _hdn = HDate.roshHashanaDay(year);
@@ -77,22 +194,6 @@ export class HDate extends JDate {
     }
     _hdn += day - 1;
     return _hdn;
-  }
-
-  public static today(): HDate {
-    return new HDate(GDate.today());
-  }
-
-  public getYear(): number {
-    return this.year;
-  }
-
-  public getMonth(): number {
-    return this.month;
-  }
-
-  public getDay(): number {
-    return this.day;
   }
 
   private static roshHashanaDay(hyear: number): number {
@@ -153,7 +254,7 @@ export class HDate extends JDate {
       rh = HDate.roshHashanaDay(hyear);
     }
 
-    if (rhnext == 0) {
+    if (rhnext === 0) {
       rhnext = HDate.roshHashanaDay(hyear + 1);
     }
 
@@ -173,80 +274,8 @@ export class HDate extends JDate {
     this.day += days;
   }
 
-  public getMonthLength(): number {
-    return HDate.monthLength(this.year, this.month, this.yearType);
-  }
-
-  public getNumberOfMonths(): number {
-    return HDate.monthsInYear(this.year);
-  }
-  public static monthsInYear(hyear: number): number {
-    return HDate.embolismicYear(hyear) ? 13 : 12;
-  }
-
-  public static monthLength(
-    hyear: number,
-    hmonth: number,
-    yearType: number
-  ): number {
-    switch (hmonth) {
-      case HDateMonth.TISHRI:
-      case HDateMonth.AV:
-      case HDateMonth.NISSAN:
-      case HDateMonth.SIVAN:
-      case HDateMonth.SHVAT:
-        return 30;
-      case HDateMonth.CHESHVAN:
-        if (yearType == HDateYearType.SHLEMA) {
-          return 30;
-        }
-        return 29;
-      case HDateMonth.KISLEV:
-        if (yearType == HDateYearType.CHASERA) {
-          return 29;
-        }
-        return 30;
-      case HDateMonth.TEVET:
-      case HDateMonth.ADAR2:
-      case HDateMonth.IYAR:
-      case HDateMonth.TAMUZ:
-      case HDateMonth.ELUL:
-        return 29;
-      case HDateMonth.ADAR:
-        return HDate.embolismicYear(hyear) ? 30 : 29;
-      default:
-        return 0; //Impossible.
-    }
-  }
-
-  public static embolismicYear(hyear: number): boolean {
-    return (12 * hyear + 17) % 19 >= 12;
-  }
-
-  static convert(jdate: JDate) {
-    return new HDate(jdate);
-  }
-
-  public plus(days: number): HDate {
-    const hdate = HDate.convert(this);
-    hdate.calcFromHdn(days);
-    return hdate;
-  }
-
-  public isEmbolismic(): boolean {
-    return HDate.embolismicYear(this.year);
-  }
-
-  public getYearLength(): number {
-    switch (this.yearType) {
-      case HDateYearType.CHASERA:
-        return this.isEmbolismic() ? 383 : 353;
-      case HDateYearType.SDURA:
-        return this.isEmbolismic() ? 384 : 354;
-      case HDateYearType.SHLEMA:
-        return this.isEmbolismic() ? 385 : 355;
-      default:
-        return 0;
-    }
-  }
+  private year: number;
+  private month: number;
+  private day: number;
+  private yearType: number;
 }

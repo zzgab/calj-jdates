@@ -1,13 +1,10 @@
 import { JDate } from "./JDate";
 
 export class GDate extends JDate {
-  private day: number;
-  private month: number;
-  private year: number;
+  public constructor(jdate: JDate);
+  public constructor(day: number, month: number, year: number);
 
-  constructor(jdate: JDate);
   constructor(hdn: number);
-  constructor(day: number, month: number, year: number);
   constructor(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
     if (typeof dayOrHdnOrJdate === "number") {
       if (month === undefined) {
@@ -94,6 +91,18 @@ export class GDate extends JDate {
     return new GDate(date.getDate(), date.getMonth() + 1, date.getFullYear());
   }
 
+  public getDay(): number {
+    return this.day;
+  }
+
+  public getMonth(): number {
+    return this.month;
+  }
+
+  public getYear(): number {
+    return this.year;
+  }
+
   private calcFromHdn() {
     const a = this.getHdn() + 380041;
     const b = Math.floor((4 * a + 3) / 146097);
@@ -107,15 +116,7 @@ export class GDate extends JDate {
     this.year = 100 * b + d - 4800 + Math.floor(m / 10);
   }
 
-  getDay(): number {
-    return this.day;
-  }
-
-  getMonth(): number {
-    return this.month;
-  }
-
-  getYear(): number {
-    return this.year;
-  }
+  private day: number;
+  private month: number;
+  private year: number;
 }

@@ -2,7 +2,7 @@
   <head>
       <script src="dist/calj.min.js"></script>
       <script>
-          const { HDate, GDate, Parasha } = CalJ;
+          const { HDate, GDate, Parasha, ParashaScheme } = CalJ;
       </script>
       <title>The CalJ Javascript Library</title>
   </head>
@@ -11,26 +11,37 @@
       &lt;script src="<a href="dist/calj.min.js">https://calj-jdates.netlify.app/dist/calj.min.js</a>">&lt;/script>
 
       &lt;script>
-        const { HDate, GDate, Parasha } = CalJ;
+        const { HDate, GDate, Parasha, ParashaScheme } = CalJ;
 
         console.log("This week's Parasha:",
-          new Parasha(GDate.today(), Parasha.ISRAEL)
+          new Parasha(GDate.today(), ParashaScheme.ISRAEL)
             .getHebrewName()
         );
 
+        const h = HDate.convert(new GDate(9, 2, 2023));
         console.log("9 Feb 2023 is: ",
-          HDate.convert(new GDate(9, 2, 2023).toString());
+          `${h.getDay()} ${h.getMonthName()} ${h.getYear()}`);
       &lt;/script>
     </code></pre>
     <hr />
     <div>
       <p>
-          This week's Parasha: <script>document.write(new Parasha(GDate.today(), Parasha.ISRAEL)
-            .getHebrewName())</script>
+          This week's Parasha: <span id="parasha"></span>
       </p>
-      <p>
-        9 Feb 2023 is: <script>document.write(HDate.convert(new GDate(9, 2, 2023)).toString())</script>
-      </p>
+      <div>
+        9 Feb 2023 is: <div style="direction: rtl; display: inline-block">
+          <div id="hDay" style="display: inline-block"></div>
+          <div id="hMonth" style="display: inline-block"></div>
+          <div id="hYear" style="display: inline-block"></div>
+        </div>
+      </div>
     </div>
+    <script>
+      const h = HDate.convert(new GDate(9, 2, 2023));
+      document.querySelector("#parasha").innerHTML = new Parasha(GDate.today(), ParashaScheme.ISRAEL).getHebrewName();
+      document.querySelector("#hDay").innerHTML = h.getDay();
+      document.querySelector("#hMonth").innerHTML = h.getMonthName();
+      document.querySelector("#hYear").innerHTML = h.getYear();
+    </script>
   </body>
 </html>

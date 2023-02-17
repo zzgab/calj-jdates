@@ -9,5 +9,9 @@ module.exports = {
     format: "iife",
     name: "CalJ",
   },
-  plugins: [typescript({ module: "esnext" }), iifeNS(), terser()],
+  plugins: [
+    typescript({ module: "esnext", declaration: false }),
+    iifeNS(),
+    terser(),
+  ],
 };

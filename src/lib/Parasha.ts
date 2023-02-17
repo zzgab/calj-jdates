@@ -10,11 +10,18 @@ export enum ParashaSpecial {
   HAGADOL = -5,
 }
 
+export enum ParashaScheme {
+  ISRAEL = 1,
+  WORLD = 0,
+}
+
 export class Parasha {
+  public static ISRAEL = true;
+
   private parshiot: number[];
   private special: number;
-  constructor(jdate: JDate, israel: boolean) {
-    this.compute(HDate.convert(jdate), israel);
+  constructor(jdate: JDate, israel: ParashaScheme) {
+    this.compute(HDate.convert(jdate), !!israel);
   }
 
   private compute(hdate: HDate, israel: boolean): void {

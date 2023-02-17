@@ -5,7 +5,7 @@
   "homepage": "https://gitlab.plenitech.com/calj/ts-jdates",
   "main": "lib/index.js",
   "scripts": {
-    "build:lib": "tsc",
+    "build:lib": "rm -rf dist && tsc",
     "build:browser": "rollup -c && cp public/index.html cdn/",
     "deploy:netlify": "netlify deploy --site bf52c59d-7f87-460d-a6fe-646077abda8b --dir cdn/",
     "deploy:netlify:prod": "netlify deploy --prod --site bf52c59d-7f87-460d-a6fe-646077abda8b --dir cdn/",
