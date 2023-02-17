@@ -63,8 +63,8 @@ export class Festival {
 
   static makePesach(hyear: number, israel: boolean): Festival {
     return checkCache(FestivalType.PESACH, hyear, israel, () => {
-      const hStart = new HDate(hyear, HDateMonth.NISSAN, 15);
-      const hEnd = new HDate(hyear, HDateMonth.NISSAN, 21 + (israel ? 0 : 1));
+      const hStart = new HDate(15, HDateMonth.NISSAN, hyear);
+      const hEnd = new HDate(21 + (israel ? 0 : 1), HDateMonth.NISSAN, hyear);
       return new Festival(
         israel,
         FestivalType.PESACH,

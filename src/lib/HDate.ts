@@ -41,16 +41,16 @@ export class HDate extends JDate {
 
   constructor(jdate: JDate);
   constructor(hdn: number);
-  constructor(year: number, month: number, day: number);
-  constructor(param: number | JDate, month?: number, day?: number) {
-    if (typeof param === "number") {
+  constructor(day: number, month: number, year: number);
+  constructor(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
+    if (typeof dayOrHdnOrJdate === "number") {
       if (month !== undefined) {
-        super(HDate.hdnForYmd(param, month, day));
+        super(HDate.hdnForYmd(year, month, dayOrHdnOrJdate));
       } else {
-        super(param);
+        super(dayOrHdnOrJdate);
       }
     } else {
-      super(param);
+      super(dayOrHdnOrJdate);
     }
     this.calcFromHdn();
   }
@@ -248,15 +248,5 @@ export class HDate extends JDate {
       default:
         return 0;
     }
-  }
-
-  public add(days: number): HDate {
-    this.calcFromHdn(days);
-    return this;
-  }
-
-  public setYear(year: number): void {
-    this.setHdn(HDate.hdnForYmd(year, this.month, this.day));
-    this.calcFromHdn();
   }
 }

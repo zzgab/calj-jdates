@@ -7,20 +7,20 @@ export class GDate extends JDate {
 
   constructor(jdate: JDate);
   constructor(hdn: number);
-  constructor(year: number, month: number, day: number);
-  constructor(param: number | JDate, month?: number, day?: number) {
-    if (typeof param === "number") {
+  constructor(day: number, month: number, year: number);
+  constructor(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
+    if (typeof dayOrHdnOrJdate === "number") {
       if (month === undefined) {
-        super(param);
+        super(dayOrHdnOrJdate);
         this.calcFromHdn();
       } else {
-        super(GDate.hdnForYmd(param, month, day));
-        this.year = param;
+        super(GDate.hdnForYmd(year, month, dayOrHdnOrJdate));
+        this.year = year;
         this.month = month;
-        this.day = day;
+        this.day = dayOrHdnOrJdate;
       }
     } else {
-      super(param);
+      super(dayOrHdnOrJdate);
       this.calcFromHdn();
     }
   }
@@ -90,10 +90,8 @@ export class GDate extends JDate {
   }
 
   public static today(): GDate {
-    const date = new Date();
-    return new GDate(
-      GDate.hdnForYmd(date.getFullYear(), date.getMonth() + 1, date.getDate())
-    );
+    const date = new Date(Date.now());
+    return new GDate(date.getDate(), date.getMonth() + 1, date.getFullYear());
   }
 
   private calcFromHdn() {

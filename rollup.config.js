@@ -1,11 +1,13 @@
-const typescript = require('@rollup/plugin-typescript');
-const terser = require('@rollup/plugin-terser');
+const typescript = require("@rollup/plugin-typescript");
+const terser = require("@rollup/plugin-terser");
+const iifeNS = require("rollup-plugin-iife-namespace");
 
 module.exports = {
-    input: 'src/lib/index.ts',
-    output: {
-        file: 'dist/jdates.min.js',
-        format: 'cjs',
-    },
-    plugins: [typescript({module: "esnext"}), terser()],
+  input: "src/lib/index.ts",
+  output: {
+    file: "cdn/dist/calj.min.js",
+    format: "iife",
+    name: "CalJ",
+  },
+  plugins: [typescript({ module: "esnext" }), iifeNS(), terser()],
 };

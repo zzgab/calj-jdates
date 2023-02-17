@@ -1,0 +1,24 @@
+<html lang="en">
+  <head>
+      <script src="dist/calj.min.js"></script>
+      <script>
+          const { HDate, GDate, Parasha } = CalJ;
+      </script>
+      <title>The CalJ Javascript Library</title>
+  </head>
+  <body>
+    <pre><code>
+      &lt;script src="https://jdates.calj.net/dist/calj.min.js">&lt;/script>
+
+      &lt;script>
+        const { HDate, GDate, Parasha } = CalJ;
+        const today = GDate.today();
+        console.log("This week's Parasha:",
+          new Parasha(today, Parasha.ISRAEL)
+            .getHebrewName()
+        );
+        console.log("Today is: ", HDate.convert(today));
+      &lt;/script>
+    </code></pre>
+  </body>
+</html>

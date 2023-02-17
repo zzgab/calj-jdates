@@ -26,12 +26,12 @@ export class Parasha {
     //Get the date of Simchat Torah of the current Jewish year.
     //Note: it is safe to use 23 Tishri for Simchat Torah, even in Israel,
     //because anyway 23 Tishri can never be Shabbat, so we don't risk to skip one Shabbat.
-    const hST = new HDate(HY, HDateMonth.TISHRI, 23);
+    const hSTcandidate = new HDate(23, HDateMonth.TISHRI, HY);
     //If we're querying the Parasha for a date between Rosh Hashana and Simchat Torah,
     //we need to rebase from previous Simchat Torah.
-    if (hdate.lte(hST)) {
-      hST.setYear(HY - 1);
-    }
+    const hST = hdate.lte(hSTcandidate)
+      ? new HDate(23, HDateMonth.TISHRI, HY - 1)
+      : hSTcandidate;
 
     //We're going to compute the date of Bereshit:
     //The shabbat immediately following Simchat Torah.
@@ -175,7 +175,7 @@ export class Parasha {
       return;
     }
 
-    const purim = new HDate(hdate.getYear(), hdate.getNumberOfMonths(), 14);
+    const purim = new HDate(14, hdate.getNumberOfMonths(), hdate.getYear());
 
     const hShabbatZachor = new HDate(purim).plus(-(purim.getDayOfWeek() + 1));
     const hShabbatZachorMinus7 = new HDate(hShabbatZachor).plus(-7);
@@ -185,14 +185,13 @@ export class Parasha {
       return;
     }
 
-    const hShabbatSheqalim = new HDate(
-      hdate.getYear(),
-      hdate.getNumberOfMonths(),
-      1
+    const hFirstAdar = new HDate(1, hdate.getNumberOfMonths(), hdate.getYear());
+    const hShabbatSheqalim = hFirstAdar.plus(
+      hFirstAdar.getDayOfWeek() == DayOfWeek.SHABBAT
+        ? 0
+        : -(hFirstAdar.getDayOfWeek() + 1)
     );
-    if (hShabbatSheqalim.getDayOfWeek() != DayOfWeek.SHABBAT) {
-      hShabbatSheqalim.add(-(hShabbatSheqalim.getDayOfWeek() + 1));
-    }
+
     const hShabbatSheqalimMinus7 = new HDate(hShabbatSheqalim).plus(-7);
 
     if (hdate.lte(hShabbatSheqalim) && hdate.gt(hShabbatSheqalimMinus7)) {
@@ -200,7 +199,7 @@ export class Parasha {
       return;
     }
 
-    const hShabbatHaChodesh = new HDate(hdate.getYear(), HDateMonth.NISSAN, 1);
+    const hShabbatHaChodesh = new HDate(1, HDateMonth.NISSAN, hdate.getYear());
     if (hShabbatHaChodesh.getDayOfWeek() != DayOfWeek.SHABBAT) {
       hShabbatHaChodesh.plus(-(hShabbatHaChodesh.getDayOfWeek() + 1));
     }
@@ -281,11 +280,11 @@ export class Parasha {
   ] as const;
 
   private static specialParashaNames = [
-      "שקלים",
-      "זכור",
-      "פרה",
-      "החודש",
-      "הגדול",
+    "שקלים",
+    "זכור",
+    "פרה",
+    "החודש",
+    "הגדול",
   ] as const;
 
   public static getSidraHebrewName(n: number): string | null {
