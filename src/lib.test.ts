@@ -1,5 +1,6 @@
 import { GDate, HDate, Parasha, ParashaScheme } from "./lib";
 import { HDateMonth } from "./lib/HDate";
+import { Festival } from "./lib/Festival";
 
 describe("HDate", () => {
   it("should convert from GDate", () => {
@@ -26,5 +27,18 @@ describe("Parasha", () => {
     expect(
       new Parasha(new GDate(2, 3, 2023), ParashaScheme.WORLD).getSpecialName()
     ).toEqual("זכור");
+  });
+});
+
+describe("Festival", () => {
+  it("should calculate Pesach", () => {
+    expect(
+      GDate.convert(
+        Festival.pesach(
+          HDate.convert(new GDate(17, 2, 2023)).getYear(),
+          ParashaScheme.ISRAEL
+        ).getStartDate()
+      ).toString()
+    ).toBe("2023-04-06");
   });
 });

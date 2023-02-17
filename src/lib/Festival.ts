@@ -1,4 +1,5 @@
 import { HDate, HDateMonth } from "./HDate";
+import { ParashaScheme } from "./Parasha";
 
 enum FestivalType {
   ROSH_HASHANA = 0,
@@ -51,22 +52,12 @@ const checkCache = (
 };
 
 export class Festival {
-  constructor(
-    private israel: boolean,
-    private festivalType: FestivalType,
-    private startDate: HDate,
-    private endDate: HDate,
-    private yamimTovim: boolean[],
-    _zmaner: null,
-    private _startsEve: boolean
-  ) {}
-
-  static makePesach(hyear: number, israel: boolean): Festival {
-    return checkCache(FestivalType.PESACH, hyear, israel, () => {
+  public static pesach(hyear: number, israel: ParashaScheme): Festival {
+    return checkCache(FestivalType.PESACH, hyear, !!israel, () => {
       const hStart = new HDate(15, HDateMonth.NISSAN, hyear);
       const hEnd = new HDate(21 + (israel ? 0 : 1), HDateMonth.NISSAN, hyear);
       return new Festival(
-        israel,
+        !!israel,
         FestivalType.PESACH,
         hStart,
         hEnd,
@@ -77,7 +68,17 @@ export class Festival {
     });
   }
 
-  getStartDate(): HDate {
+  public getStartDate(): HDate {
     return this.startDate;
   }
+
+  private constructor(
+    private _israel: boolean,
+    private _festivalType: FestivalType,
+    private startDate: HDate,
+    private _endDate: HDate,
+    private _yamimTovim: boolean[],
+    private _zmaner: null,
+    private _startsEve: boolean
+  ) {}
 }

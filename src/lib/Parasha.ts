@@ -222,7 +222,10 @@ export class Parasha {
       return;
     }
 
-    const hPesach = Festival.makePesach(hdate.getYear(), true).getStartDate();
+    const hPesach = Festival.pesach(
+      hdate.getYear(),
+      ParashaScheme.ISRAEL
+    ).getStartDate();
     const hShabbatHaGadol = hPesach.plus(-(hPesach.getDayOfWeek() + 1));
     if (hdate.lte(hShabbatHaGadol) && hdate.gt(hShabbatHaGadol.plus(-7))) {
       this.special = ParashaSpecial.HAGADOL;

@@ -22,6 +22,10 @@ export class GDate extends JDate {
     }
   }
 
+  public static convert(jdate: JDate): GDate {
+    return new GDate(jdate);
+  }
+
   public static isLeapYear(year: number): boolean {
     return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);
   }
