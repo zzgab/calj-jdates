@@ -7,6 +7,8 @@
   "scripts": {
     "build:lib": "tsc",
     "build:browser": "rollup -c && cp public/index.html cdn/",
+    "deploy:netlify": "netlify deploy --site bf52c59d-7f87-460d-a6fe-646077abda8b --dir cdn/",
+    "deploy:netlify:prod": "netlify deploy --prod --site bf52c59d-7f87-460d-a6fe-646077abda8b --dir cdn/",
     "prettier": "prettier -w **/*.ts *.js */**/*.ts",
     "test": "jest"
   },

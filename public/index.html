@@ -8,17 +8,29 @@
   </head>
   <body>
     <pre><code>
-      &lt;script src="https://jdates.calj.net/dist/calj.min.js">&lt;/script>
+      &lt;script src="https://calj-jdates.netlify.app/dist/calj.min.js">&lt;/script>
 
       &lt;script>
         const { HDate, GDate, Parasha } = CalJ;
-        const today = GDate.today();
+
         console.log("This week's Parasha:",
-          new Parasha(today, Parasha.ISRAEL)
+          new Parasha(GDate.today(), Parasha.ISRAEL)
             .getHebrewName()
         );
-        console.log("Today is: ", HDate.convert(today));
+
+        console.log("9 Feb 2023 is: ",
+          HDate.convert(new GDate(9, 2, 2023).toString());
       &lt;/script>
     </code></pre>
+    <hr />
+    <div>
+      <p>
+          This week's Parasha: <script>document.write(new Parasha(GDate.today(), Parasha.ISRAEL)
+            .getHebrewName())</script>
+      </p>
+      <p>
+        9 Feb 2023 is: <script>document.write(HDate.convert(new GDate(9, 2, 2023)).toString())</script>
+      </p>
+    </div>
   </body>
 </html>
