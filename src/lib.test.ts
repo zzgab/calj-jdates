@@ -1,6 +1,7 @@
-import { GDate, HDate, Parasha, ParashaScheme } from "./lib";
-import { HDateMonth } from "./lib/HDate";
-import { Festival } from "./lib/Festival";
+import {GDate, HDate, Parasha, ParashaScheme} from "./lib";
+import {HDateMonth} from "./lib/HDate";
+import {Festival} from "./lib/Festival";
+import {ParashaSpecial} from "./lib/Parasha";
 
 describe("HDate", () => {
   it("should convert from GDate", () => {
@@ -19,14 +20,32 @@ describe("HDate", () => {
 describe("Parasha", () => {
   it("should calculate", () => {
     const g = new GDate(16, 2, 2023);
-    const parasha = new Parasha(g, ParashaScheme.ISRAEL);
+    const parasha = Parasha.make(g, ParashaScheme.ISRAEL);
     expect(parasha.getHebrewName()).toEqual("משפטים");
   });
 
   it("should have special parasha", () => {
-    expect(
-      new Parasha(new GDate(2, 3, 2023), ParashaScheme.WORLD).getSpecialName()
-    ).toEqual("זכור");
+    const parasha = Parasha.make(new GDate(2, 3, 2023), ParashaScheme.WORLD);
+    expect(parasha.getSpecialName()).toEqual("זכור");
+    expect(parasha.getSpecial()).toBe(ParashaSpecial.ZACHOR);
+  });
+
+  it("should have holiday name Pesach", () => {
+    const parasha = Parasha.make(new HDate(16, HDateMonth.NISSAN, 5760));
+    expect(parasha.getHebrewName()).toBe(undefined);
+    expect(parasha.getFestivalName()).toBe("פסח");
+  });
+
+  it("should have holiday name Shavuot in Chul", () => {
+    const parasha = Parasha.make(new HDate(7, HDateMonth.SIVAN, 5783));
+    expect(parasha.getHebrewName()).toBe(undefined);
+    expect(parasha.getFestivalName()).toBe("שבועות");
+  });
+
+  it("should not be holiday on Sivan 7 in Israel", () => {
+    const parasha = Parasha.make(new HDate(7, HDateMonth.SIVAN, 5783), ParashaScheme.ISRAEL);
+    expect(parasha.getHebrewName()).toBe("נשא");
+    expect(parasha.getFestivalName()).toBe(undefined);
   });
 });
 

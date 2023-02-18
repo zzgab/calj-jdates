@@ -3,12 +3,20 @@ import { HDate, HDateMonth } from "./HDate";
 import { Festival } from "./Festival";
 
 export enum ParashaSpecial {
-  SHEQALIM = -1,
-  ZACHOR = -2,
-  PARAH = -3,
-  HACHODESH = -4,
-  HAGADOL = -5,
+  SHEQALIM = "SHEQALIM",
+  ZACHOR = "ZACHOR",
+  PARAH = "PARAH",
+  HACHODESH = "HACHODESH",
+  HAGADOL = "HAGADOL",
 }
+
+const specialParashaNames: Record<ParashaSpecial, string> = {
+  [ParashaSpecial.SHEQALIM]: "שקלים",
+  [ParashaSpecial.ZACHOR]: "זכור",
+  [ParashaSpecial.PARAH]: "פרה",
+  [ParashaSpecial.HACHODESH]: "החודש",
+  [ParashaSpecial.HAGADOL]: "הגדול",
+};
 
 export enum ParashaScheme {
   ISRAEL = 1,
@@ -16,15 +24,18 @@ export enum ParashaScheme {
 }
 
 export class Parasha {
-  public static ISRAEL = true;
-
-  private parshiot: number[];
-  private special: number;
-  constructor(jdate: JDate, israel: ParashaScheme) {
-    this.compute(HDate.convert(jdate), !!israel);
+  public static make(jdate: JDate, israel?: ParashaScheme) {
+    return new Parasha(jdate, israel);
   }
 
-  private compute(hdate: HDate, israel: boolean): void {
+  private parshiot: number[];
+  private festival: Festival;
+  private special: ParashaSpecial;
+  private constructor(jdate: JDate, israel: ParashaScheme) {
+    this.compute(HDate.convert(jdate), israel);
+  }
+
+  private compute(hdate: HDate, israel: ParashaScheme): void {
     if (hdate.getDayOfWeek() != DayOfWeek.SHABBAT) {
       hdate = hdate.plus(DayOfWeek.SHABBAT - hdate.getDayOfWeek());
     }
@@ -60,6 +71,10 @@ export class Parasha {
     const kevvia = yl * 100 + dow * 10 + (israel ? 1 : 0);
 
     this.parshiot = Parasha.getArrayParshiot(kevvia, n);
+
+    if ((this.parshiot?.length ?? 0) === 0) {
+      this.festival = Festival.onDate(hdate, israel);
+    }
 
     //Detect now if it is one of the 4 special parshiot:
     this.computeSpecialParasha(hdate);
@@ -166,7 +181,7 @@ export class Parasha {
   }
 
   private computeSpecialParasha(hdate: HDate): void {
-    this.special = 0;
+    this.special = undefined;
 
     //Don't need to bother computing, if we are in a month that is not
     //likely to bear one of the special parshiot.
@@ -289,22 +304,14 @@ export class Parasha {
     "וזאת-הברכה",
   ] as const;
 
-  private static specialParashaNames = [
-    "שקלים",
-    "זכור",
-    "פרה",
-    "החודש",
-    "הגדול",
-  ] as const;
-
   public static getSidraHebrewName(n: number): string | null {
     if (0 <= n && n <= 53) return Parasha.hebrewSidraNames[n];
     return null;
   }
 
   public getHebrewName(): string {
-    if (this.parshiot.length == 0) {
-      return ""; // Holiday...
+    if ((this.parshiot?.length ?? 0) == 0) {
+      return undefined; // Holiday...
     }
 
     if (this.parshiot.length == 1) {
@@ -316,10 +323,17 @@ export class Parasha {
     }
   }
 
+  public getSpecial(): ParashaSpecial {
+    return this.special;
+  }
+
   public getSpecialName(): string {
-    if (!this.special) {
-      return undefined;
+    return this.special && specialParashaNames[this.special];
+  }
+
+  public getFestivalName(): string {
+    if (this.festival) {
+      return this.festival.getName();
     }
-    return Parasha.specialParashaNames[-this.special - 1];
   }
 }

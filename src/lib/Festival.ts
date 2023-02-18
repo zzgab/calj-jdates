@@ -1,5 +1,6 @@
 import { HDate, HDateMonth } from "./HDate";
 import { ParashaScheme } from "./Parasha";
+import {JDate} from "./JDate";
 
 enum FestivalType {
   ROSH_HASHANA = 0,
@@ -31,6 +32,11 @@ enum FestivalType {
   WINTER = 100,
 }
 
+const festivalNames: { [k: number]: string } = {
+  [FestivalType.PESACH]: "פסח",
+  [FestivalType.SHAVUOT]: "שבועות",
+};
+
 const cache = new Map<number, Festival>();
 
 const cacheKey = (type: FestivalType, hyear: number, israel: boolean) =>
@@ -39,10 +45,10 @@ const cacheKey = (type: FestivalType, hyear: number, israel: boolean) =>
 const checkCache = (
   type: FestivalType,
   hyear: number,
-  israel: boolean,
+  israel: ParashaScheme,
   calculator: () => Festival
 ): Festival => {
-  const key = cacheKey(type, hyear, israel);
+  const key = cacheKey(type, hyear, !!israel);
   let festival = cache.get(key);
   if (!festival) {
     festival = calculator();
@@ -53,7 +59,7 @@ const checkCache = (
 
 export class Festival {
   public static pesach(hyear: number, israel: ParashaScheme): Festival {
-    return checkCache(FestivalType.PESACH, hyear, !!israel, () => {
+    return checkCache(FestivalType.PESACH, hyear, israel, () => {
       const hStart = new HDate(15, HDateMonth.NISSAN, hyear);
       const hEnd = new HDate(21 + (israel ? 0 : 1), HDateMonth.NISSAN, hyear);
       return new Festival(
@@ -68,17 +74,59 @@ export class Festival {
     });
   }
 
+  public static shavuot(hyear: number, israel: ParashaScheme): Festival {
+    return checkCache(FestivalType.SHAVUOT, hyear, israel, () => {
+      const hStart = new HDate(6, HDateMonth.SIVAN, hyear);
+      const hEnd = new HDate(6 + (israel ? 0 : 1), HDateMonth.SIVAN, hyear);
+      return new Festival(
+        !!israel,
+        FestivalType.SHAVUOT,
+        hStart,
+        hEnd,
+        [true, !israel],
+        null,
+        true
+      );
+    });
+  }
+
+  public static onDate(hdate: HDate, israel: ParashaScheme): Festival {
+    if (hdate.getMonth() === HDateMonth.NISSAN) {
+      const festival = Festival.pesach(hdate.getYear(), israel);
+      if (festival.contains(hdate)) {
+        return festival;
+      }
+    } else if (hdate.getMonth() === HDateMonth.SIVAN) {
+      const festival = Festival.shavuot(hdate.getYear(), israel);
+      if (festival.contains(hdate)) {
+        return festival;
+      }
+    }
+    return undefined;
+  }
+
+  public contains(jdate: JDate): boolean {
+    return jdate.gte(this.startDate) && jdate.lte(this.endDate);
+  }
+
+  public getEndDate(): HDate {
+    return this.endDate;
+  }
   public getStartDate(): HDate {
     return this.startDate;
   }
 
   private constructor(
     private _israel: boolean,
-    private _festivalType: FestivalType,
+    private type: FestivalType,
     private startDate: HDate,
-    private _endDate: HDate,
+    private endDate: HDate,
     private _yamimTovim: boolean[],
     private _zmaner: null,
     private _startsEve: boolean
   ) {}
+
+  public getName(): string {
+    return festivalNames[this.type];
+  }
 }

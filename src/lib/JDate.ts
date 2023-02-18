@@ -27,6 +27,10 @@ export abstract class JDate {
     return this.hdn > other.hdn;
   }
 
+  public gte(other: JDate): boolean {
+    return this.hdn >= other.hdn;
+  }
+
   public minus(other: JDate): number {
     return this.hdn - other.hdn;
   }
