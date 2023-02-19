@@ -1,11 +1,13 @@
 import { JDate } from "./JDate";
 
 export class GDate extends JDate {
-  public constructor(jdate: JDate);
-  public constructor(day: number, month: number, year: number);
+  static make(jdate: JDate);
+  static make(day: number, month: number, year: number);
+  static make(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
+    return new GDate(dayOrHdnOrJdate, month, year);
+  }
 
-  constructor(hdn: number);
-  constructor(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
+  private constructor(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
     if (typeof dayOrHdnOrJdate === "number") {
       if (month === undefined) {
         super(dayOrHdnOrJdate);
@@ -22,15 +24,15 @@ export class GDate extends JDate {
     }
   }
 
-  public static convert(jdate: JDate): GDate {
+  static convert(jdate: JDate): GDate {
     return new GDate(jdate);
   }
 
-  public static isLeapYear(year: number): boolean {
+  static isLeapYear(year: number): boolean {
     return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);
   }
 
-  public static monthLength(year: number, month: number): number {
+  static monthLength(year: number, month: number): number {
     switch (month) {
       case 1:
         return 31;
@@ -61,7 +63,7 @@ export class GDate extends JDate {
     }
   }
 
-  public static hdnForYmd(year: number, month: number, day: number): number {
+  static hdnForYmd(year: number, month: number, day: number): number {
     if (month == 0) {
       month = 12;
       --year;
@@ -90,20 +92,20 @@ export class GDate extends JDate {
     );
   }
 
-  public static today(): GDate {
+  static today(): GDate {
     const date = new Date(Date.now());
     return new GDate(date.getDate(), date.getMonth() + 1, date.getFullYear());
   }
 
-  public getDay(): number {
+  getDay(): number {
     return this.day;
   }
 
-  public getMonth(): number {
+  getMonth(): number {
     return this.month;
   }
 
-  public getYear(): number {
+  getYear(): number {
     return this.year;
   }
 

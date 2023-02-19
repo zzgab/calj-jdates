@@ -1,6 +1,6 @@
 import { HDate, HDateMonth } from "./HDate";
 import { ParashaScheme } from "./Parasha";
-import {JDate} from "./JDate";
+import { JDate } from "./JDate";
 
 enum FestivalType {
   ROSH_HASHANA = 0,
@@ -60,8 +60,8 @@ const checkCache = (
 export class Festival {
   public static pesach(hyear: number, israel: ParashaScheme): Festival {
     return checkCache(FestivalType.PESACH, hyear, israel, () => {
-      const hStart = new HDate(15, HDateMonth.NISSAN, hyear);
-      const hEnd = new HDate(21 + (israel ? 0 : 1), HDateMonth.NISSAN, hyear);
+      const hStart = HDate.make(15, HDateMonth.NISSAN, hyear);
+      const hEnd = HDate.make(21 + (israel ? 0 : 1), HDateMonth.NISSAN, hyear);
       return new Festival(
         !!israel,
         FestivalType.PESACH,
@@ -76,8 +76,8 @@ export class Festival {
 
   public static shavuot(hyear: number, israel: ParashaScheme): Festival {
     return checkCache(FestivalType.SHAVUOT, hyear, israel, () => {
-      const hStart = new HDate(6, HDateMonth.SIVAN, hyear);
-      const hEnd = new HDate(6 + (israel ? 0 : 1), HDateMonth.SIVAN, hyear);
+      const hStart = HDate.make(6, HDateMonth.SIVAN, hyear);
+      const hEnd = HDate.make(6 + (israel ? 0 : 1), HDateMonth.SIVAN, hyear);
       return new Festival(
         !!israel,
         FestivalType.SHAVUOT,

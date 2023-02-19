@@ -32,7 +32,7 @@ export class Parasha {
   private festival: Festival;
   private special: ParashaSpecial;
   private constructor(jdate: JDate, israel: ParashaScheme) {
-    this.compute(HDate.convert(jdate), israel);
+    this.compute(HDate.make(jdate), israel);
   }
 
   private compute(hdate: HDate, israel: ParashaScheme): void {
@@ -44,17 +44,17 @@ export class Parasha {
     //Get the date of Simchat Torah of the current Jewish year.
     //Note: it is safe to use 23 Tishri for Simchat Torah, even in Israel,
     //because anyway 23 Tishri can never be Shabbat, so we don't risk to skip one Shabbat.
-    const hSTcandidate = new HDate(23, HDateMonth.TISHRI, HY);
+    const hSTcandidate = HDate.make(23, HDateMonth.TISHRI, HY);
     //If we're querying the Parasha for a date between Rosh Hashana and Simchat Torah,
     //we need to rebase from previous Simchat Torah.
     const hST = hdate.lte(hSTcandidate)
-      ? new HDate(23, HDateMonth.TISHRI, HY - 1)
+      ? HDate.make(23, HDateMonth.TISHRI, HY - 1)
       : hSTcandidate;
 
     //We're going to compute the date of Bereshit:
     //The shabbat immediately following Simchat Torah.
     //Let's rename the variable for clarity.
-    const hBereshit = new HDate(hST);
+    const hBereshit = HDate.make(hST);
 
     // n: number of full weeks between last time Bereshit was read, and this->hdate.
     // 0 means: this week's parasha is Bereshit!
@@ -197,31 +197,31 @@ export class Parasha {
       return;
     }
 
-    const purim = new HDate(14, hdate.getNumberOfMonths(), hdate.getYear());
+    const purim = HDate.make(14, hdate.getNumberOfMonths(), hdate.getYear());
 
-    const hShabbatZachor = new HDate(purim).plus(-(purim.getDayOfWeek() + 1));
-    const hShabbatZachorMinus7 = new HDate(hShabbatZachor).plus(-7);
+    const hShabbatZachor = HDate.make(purim).plus(-(purim.getDayOfWeek() + 1));
+    const hShabbatZachorMinus7 = HDate.make(hShabbatZachor).plus(-7);
 
     if (hdate.lte(hShabbatZachor) && hdate.gt(hShabbatZachorMinus7)) {
       this.special = ParashaSpecial.ZACHOR;
       return;
     }
 
-    const hFirstAdar = new HDate(1, hdate.getNumberOfMonths(), hdate.getYear());
+    const hFirstAdar = HDate.make(1, hdate.getNumberOfMonths(), hdate.getYear());
     const hShabbatSheqalim = hFirstAdar.plus(
       hFirstAdar.getDayOfWeek() == DayOfWeek.SHABBAT
         ? 0
         : -(hFirstAdar.getDayOfWeek() + 1)
     );
 
-    const hShabbatSheqalimMinus7 = new HDate(hShabbatSheqalim).plus(-7);
+    const hShabbatSheqalimMinus7 = HDate.make(hShabbatSheqalim).plus(-7);
 
     if (hdate.lte(hShabbatSheqalim) && hdate.gt(hShabbatSheqalimMinus7)) {
       this.special = ParashaSpecial.SHEQALIM;
       return;
     }
 
-    const hShabbatHaChodesh = new HDate(1, HDateMonth.NISSAN, hdate.getYear());
+    const hShabbatHaChodesh = HDate.make(1, HDateMonth.NISSAN, hdate.getYear());
     if (hShabbatHaChodesh.getDayOfWeek() != DayOfWeek.SHABBAT) {
       hShabbatHaChodesh.plus(-(hShabbatHaChodesh.getDayOfWeek() + 1));
     }
