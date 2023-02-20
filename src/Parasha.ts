@@ -25,12 +25,12 @@ export enum ParashaScheme {
 
 export class Parasha {
   public static make(jdate: JDate, israel?: ParashaScheme) {
-    return new Parasha(jdate, israel);
+    return new Parasha(jdate, israel ?? ParashaScheme.WORLD);
   }
 
-  private parshiot: number[];
-  private festival: Festival;
-  private special: ParashaSpecial;
+  private parshiot?: number[] | null;
+  private festival?: Festival = undefined;
+  private special?: ParashaSpecial;
   private constructor(jdate: JDate, israel: ParashaScheme) {
     this.compute(HDate.make(jdate), israel);
   }
@@ -93,7 +93,7 @@ export class Parasha {
    * @param n The number of full weeks since Bereshit
    * @return array
    */
-  private static getArrayParshiot(kevvia: number, n: number): number[] {
+  private static getArrayParshiot(kevvia: number, n: number): number[] | null {
     const strLayout = Parasha.getKevviaString(kevvia);
     const c = strLayout.charAt(n);
 
@@ -308,36 +308,37 @@ export class Parasha {
     "וזאת-הברכה",
   ] as const;
 
-  public static getSidraHebrewName(n: number): string | null {
+  public static getSidraHebrewName(n: number): string | undefined {
     if (0 <= n && n <= 53) return Parasha.hebrewSidraNames[n];
-    return null;
+    return undefined;
   }
 
-  public getHebrewName(): string {
+  public getHebrewName(): string | undefined {
     if ((this.parshiot?.length ?? 0) == 0) {
       return undefined; // Holiday...
     }
 
-    if (this.parshiot.length == 1) {
-      return Parasha.getSidraHebrewName(this.parshiot[0]);
+    if (this.parshiot!.length == 1) {
+      return Parasha.getSidraHebrewName(this.parshiot![0]);
     } else {
       return `${Parasha.getSidraHebrewName(
-        this.parshiot[0]
-      )} - ${Parasha.getSidraHebrewName(this.parshiot[1])}`;
+        this.parshiot![0]
+      )} - ${Parasha.getSidraHebrewName(this.parshiot![1])}`;
     }
   }
 
-  public getSpecial(): ParashaSpecial {
+  public getSpecial(): ParashaSpecial | undefined {
     return this.special;
   }
 
-  public getSpecialName(): string {
+  public getSpecialName(): string | undefined {
     return this.special && specialParashaNames[this.special];
   }
 
-  public getFestivalName(): string {
+  public getFestivalName(): string | undefined {
     if (this.festival) {
       return this.festival.getName();
     }
+    return;
   }
 }

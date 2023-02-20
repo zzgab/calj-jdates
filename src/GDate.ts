@@ -1,8 +1,8 @@
 import { JDate } from "./JDate";
 
 export class GDate extends JDate {
-  static make(jdate: JDate);
-  static make(day: number, month: number, year: number);
+  static make(jdate: JDate): GDate;
+  static make(day: number, month: number, year: number): GDate;
   static make(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
     return new GDate(dayOrHdnOrJdate, month, year);
   }
@@ -12,19 +12,17 @@ export class GDate extends JDate {
     month?: number,
     year?: number
   ) {
-    if (typeof dayOrHdnOrJdate === "number") {
-      if (month === undefined) {
-        super(dayOrHdnOrJdate);
-        this.calcFromHdn();
-      } else {
-        super(GDate.hdnForYmd(year, month, dayOrHdnOrJdate));
-        this.year = year;
-        this.month = month;
-        this.day = dayOrHdnOrJdate;
-      }
+    if (typeof dayOrHdnOrJdate !== "number" || month === undefined) {
+      super(dayOrHdnOrJdate as number);
+      const { day: d, month: m, year: y } = GDate.calcFromHdn(this.getHdn());
+      this.day = d;
+      this.month = m;
+      this.year = y;
     } else {
-      super(dayOrHdnOrJdate);
-      this.calcFromHdn();
+      super(GDate.hdnForYmd(year!, month, dayOrHdnOrJdate));
+      this.year = year!;
+      this.month = month;
+      this.day = dayOrHdnOrJdate;
     }
   }
 
@@ -109,17 +107,23 @@ export class GDate extends JDate {
     return this.year;
   }
 
-  private calcFromHdn() {
-    const a = this.getHdn() + 380041;
+  private static calcFromHdn(hdn: number): {
+    day: number;
+    month: number;
+    year: number;
+  } {
+    const a = hdn + 380041;
     const b = Math.floor((4 * a + 3) / 146097);
     const c = a - Math.floor((146097 * b) / 4);
     const d = Math.floor((4 * c + 3) / 1461);
     const e = c - Math.floor((1461 * d) / 4);
     const m = Math.floor((5 * e + 2) / 153);
 
-    this.day = e - Math.floor((153 * m + 2) / 5) + 1;
-    this.month = m + 3 - 12 * Math.floor(m / 10);
-    this.year = 100 * b + d - 4800 + Math.floor(m / 10);
+    return {
+      day: e - Math.floor((153 * m + 2) / 5) + 1,
+      month: m + 3 - 12 * Math.floor(m / 10),
+      year: 100 * b + d - 4800 + Math.floor(m / 10),
+    };
   }
 
   private day: number;

@@ -1,17 +1,21 @@
 {
   "name": "@calj-net/jdates",
-  "version": "1.0.0-alpha1",
+  "version": "1.0.0-alpha7",
   "description": "The Jewish Dates library from https://CalJ.net",
   "homepage": "https://gitlab.plenitech.com/calj/ts-jdates",
-  "main": "lib/index.js",
   "scripts": {
     "build": "npm run clean && npm run build:lib && npm run build:browser",
-    "build:lib": "tsc",
+    "build:lib": "npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc -p ./configs/tsconfig.esm.json",
+    "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
     "build:browser": "rollup -c && cp public/index.html dist/cdn/",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist *.tgz",
     "deploy:netlify": "netlify deploy --site $NETLIFY_SITE_ID --dir dist/cdn/",
     "deploy:netlify:prod": "netlify deploy --prod --site $NETLIFY_SITE_ID --dir dist/cdn/",
-    "prettier": "prettier -w **/*.ts *.js */**/*.ts",
+    "fixup-package-esm": "echo '{\"type\": \"module\"}' > dist/lib/esm/package.json",
+    "fixup-package-cjs": "echo '{\"type\": \"commonjs\"}' > dist/lib/cjs/package.json",
+    "prepack": "npm run build && npm run fixup-package-cjs && npm run fixup-package-esm && ./fixup-ems-ext.sh",
+    "prettier": "prettier -w package.json tsconfig.json **/*.json **/*.ts *.js */**/*.ts",
     "test": "jest"
   },
   "devDependencies": {
@@ -26,7 +30,24 @@
     "tslib": "^2.5.0",
     "typescript": "^4.9.5"
   },
-  "keywords": ["Jewish", "Calendar", "Hebrew", "Dates", "Parasha"],
+  "keywords": [
+    "Jewish",
+    "Calendar",
+    "Hebrew",
+    "Dates",
+    "Parasha"
+  ],
   "author": "Gabriel Zerbib <gabriel@calj.net>",
-  "license": "ISC"
+  "license": "ISC",
+  "main": "dist/lib/cjs/index.js",
+  "module": "dist/lib/esm/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/lib/esm/index.js",
+      "require": "./dist/lib/cjs/index.js"
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ]
 }

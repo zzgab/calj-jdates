@@ -3,9 +3,9 @@ const terser = require("@rollup/plugin-terser");
 const iifeNS = require("rollup-plugin-iife-namespace");
 
 module.exports = {
-  input: "src/lib/index.ts",
+  input: "src/index.ts",
   output: {
-    file: "dist/cdn/dist/calj.min.js",
+    file: "dist/cdn/calj.min.js",
     format: "iife",
     name: "CalJ",
   },

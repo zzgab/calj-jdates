@@ -1,7 +1,7 @@
-import { GDate, HDate, Parasha, ParashaScheme } from "./lib";
-import { HDateMonth } from "./lib/HDate";
-import { Festival } from "./lib/Festival";
-import { ParashaSpecial } from "./lib/Parasha";
+import { GDate, HDate, Parasha, ParashaScheme } from "./index";
+import { HDateMonth } from "./HDate";
+import { Festival } from "./Festival";
+import { ParashaSpecial } from "./Parasha";
 
 describe("HDate", () => {
   it("should convert from GDate", () => {

@@ -90,7 +90,10 @@ export class Festival {
     });
   }
 
-  public static onDate(hdate: HDate, israel: ParashaScheme): Festival {
+  public static onDate(
+    hdate: HDate,
+    israel: ParashaScheme
+  ): Festival | undefined {
     if (hdate.getMonth() === HDateMonth.NISSAN) {
       const festival = Festival.pesach(hdate.getYear(), israel);
       if (festival.contains(hdate)) {

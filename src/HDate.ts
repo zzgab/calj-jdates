@@ -34,9 +34,13 @@ export enum HDateYearType {
 const cacheRH = new Map<number, number>();
 
 export class HDate extends JDate {
-  static make(jdate: JDate);
-  static make(day: number, month: number, year: number);
-  static make(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
+  static make(jdate: JDate): HDate;
+  static make(day: number, month: number, year: number): HDate;
+  static make(
+    dayOrHdnOrJdate: number | JDate,
+    month?: number,
+    year?: number
+  ): HDate {
     return new HDate(dayOrHdnOrJdate, month, year);
   }
 
@@ -47,14 +51,18 @@ export class HDate extends JDate {
   ) {
     if (typeof dayOrHdnOrJdate === "number") {
       if (month !== undefined) {
-        super(HDate.hdnForYmd(year, month, dayOrHdnOrJdate));
+        super(HDate.hdnForYmd(year!, month, dayOrHdnOrJdate));
       } else {
         super(dayOrHdnOrJdate);
       }
     } else {
       super(dayOrHdnOrJdate);
     }
-    this.calcFromHdn();
+    const { year: y, month: m, day: d, yearType } = this.calcFromHdn();
+    this.year = y;
+    this.month = m;
+    this.day = d;
+    this.yearType = yearType;
   }
 
   static today(): HDate {
@@ -235,7 +243,12 @@ export class HDate extends JDate {
     return lResult;
   }
 
-  private calcFromHdn(offsetBy?: number) {
+  private calcFromHdn(offsetBy?: number): {
+    year: number;
+    month: number;
+    day: number;
+    yearType: HDateYearType;
+  } {
     if (offsetBy) {
       this.setHdn(this.getHdn() + (offsetBy ?? 0));
     }
@@ -270,6 +283,13 @@ export class HDate extends JDate {
       ml = this.getMonthLength();
     }
     this.day += days;
+
+    return {
+      year: this.year,
+      month: this.month,
+      day: this.day,
+      yearType: this.yearType,
+    };
   }
 
   private year: number;
