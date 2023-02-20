@@ -5,7 +5,7 @@ const iifeNS = require("rollup-plugin-iife-namespace");
 module.exports = {
   input: "src/lib/index.ts",
   output: {
-    file: "cdn/dist/calj.min.js",
+    file: "dist/cdn/dist/calj.min.js",
     format: "iife",
     name: "CalJ",
   },

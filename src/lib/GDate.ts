@@ -7,7 +7,11 @@ export class GDate extends JDate {
     return new GDate(dayOrHdnOrJdate, month, year);
   }
 
-  private constructor(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
+  private constructor(
+    dayOrHdnOrJdate: number | JDate,
+    month?: number,
+    year?: number
+  ) {
     if (typeof dayOrHdnOrJdate === "number") {
       if (month === undefined) {
         super(dayOrHdnOrJdate);
@@ -22,10 +26,6 @@ export class GDate extends JDate {
       super(dayOrHdnOrJdate);
       this.calcFromHdn();
     }
-  }
-
-  static convert(jdate: JDate): GDate {
-    return new GDate(jdate);
   }
 
   static isLeapYear(year: number): boolean {

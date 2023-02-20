@@ -1,4 +1,7 @@
 dist/
-cdn/
 node_modules/
 .idea/
+.npmrc
+
+# Local Netlify folder
+.netlify

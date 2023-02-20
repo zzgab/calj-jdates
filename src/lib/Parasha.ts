@@ -207,7 +207,11 @@ export class Parasha {
       return;
     }
 
-    const hFirstAdar = HDate.make(1, hdate.getNumberOfMonths(), hdate.getYear());
+    const hFirstAdar = HDate.make(
+      1,
+      hdate.getNumberOfMonths(),
+      hdate.getYear()
+    );
     const hShabbatSheqalim = hFirstAdar.plus(
       hFirstAdar.getDayOfWeek() == DayOfWeek.SHABBAT
         ? 0

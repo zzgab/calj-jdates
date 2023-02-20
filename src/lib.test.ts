@@ -9,10 +9,10 @@ describe("HDate", () => {
   });
 
   it("should have month name", () => {
-    expect( HDate.make(23, HDateMonth.TISHRI, 5780).getMonthName()).toBe("תשרי");
-    expect( HDate.make(23, HDateMonth.ADAR, 5780).getMonthName()).toBe("אדר");
-    expect( HDate.make(23, HDateMonth.ADAR2, 5780).getMonthName()).toBe("אדר");
-    expect( HDate.make(23, HDateMonth.ADAR, 5782).getMonthName()).toBe("אדר א");
+    expect(HDate.make(23, HDateMonth.TISHRI, 5780).getMonthName()).toBe("תשרי");
+    expect(HDate.make(23, HDateMonth.ADAR, 5780).getMonthName()).toBe("אדר");
+    expect(HDate.make(23, HDateMonth.ADAR2, 5780).getMonthName()).toBe("אדר");
+    expect(HDate.make(23, HDateMonth.ADAR, 5782).getMonthName()).toBe("אדר א");
     expect(HDate.make(23, HDateMonth.ADAR2, 5782).getMonthName()).toBe("אדר ב");
   });
 });
@@ -55,7 +55,7 @@ describe("Parasha", () => {
 describe("Festival", () => {
   it("should calculate Pesach", () => {
     expect(
-      GDate.convert(
+      GDate.make(
         Festival.pesach(
           HDate.make(GDate.make(17, 2, 2023)).getYear(),
           ParashaScheme.ISRAEL

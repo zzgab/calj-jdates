@@ -34,13 +34,17 @@ export enum HDateYearType {
 const cacheRH = new Map<number, number>();
 
 export class HDate extends JDate {
-   static make(jdate: JDate);
-   static make(day: number, month: number, year: number);
-   static make(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
-     return new HDate(dayOrHdnOrJdate, month, year)
-   }
+  static make(jdate: JDate);
+  static make(day: number, month: number, year: number);
+  static make(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
+    return new HDate(dayOrHdnOrJdate, month, year);
+  }
 
-  private constructor(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
+  private constructor(
+    dayOrHdnOrJdate: number | JDate,
+    month?: number,
+    year?: number
+  ) {
     if (typeof dayOrHdnOrJdate === "number") {
       if (month !== undefined) {
         super(HDate.hdnForYmd(year, month, dayOrHdnOrJdate));
@@ -53,39 +57,35 @@ export class HDate extends JDate {
     this.calcFromHdn();
   }
 
-   static today(): HDate {
+  static today(): HDate {
     return new HDate(GDate.today());
   }
 
-   getYear(): number {
+  getYear(): number {
     return this.year;
   }
 
-   getMonth(): number {
+  getMonth(): number {
     return this.month;
   }
 
-   getDay(): number {
+  getDay(): number {
     return this.day;
   }
 
-   getMonthLength(): number {
+  getMonthLength(): number {
     return HDate.monthLength(this.year, this.month, this.yearType);
   }
 
-   getNumberOfMonths(): number {
+  getNumberOfMonths(): number {
     return HDate.monthsInYear(this.year);
   }
 
-   static monthsInYear(hyear: number): number {
+  static monthsInYear(hyear: number): number {
     return HDate.embolismicYear(hyear) ? 13 : 12;
   }
 
-   static monthLength(
-    hyear: number,
-    hmonth: number,
-    yearType: number
-  ): number {
+  static monthLength(hyear: number, hmonth: number, yearType: number): number {
     switch (hmonth) {
       case HDateMonth.TISHRI:
       case HDateMonth.AV:
@@ -116,21 +116,21 @@ export class HDate extends JDate {
     }
   }
 
-   static embolismicYear(hyear: number): boolean {
+  static embolismicYear(hyear: number): boolean {
     return (12 * hyear + 17) % 19 >= 12;
   }
 
-   plus(days: number): HDate {
+  plus(days: number): HDate {
     const hdate = HDate.make(this);
     hdate.calcFromHdn(days);
     return hdate;
   }
 
-   isEmbolismic(): boolean {
+  isEmbolismic(): boolean {
     return HDate.embolismicYear(this.year);
   }
 
-   getYearLength(): number {
+  getYearLength(): number {
     switch (this.yearType) {
       case HDateYearType.CHASERA:
         return this.isEmbolismic() ? 383 : 353;
@@ -143,7 +143,7 @@ export class HDate extends JDate {
     }
   }
 
-   getMonthName(): string {
+  getMonthName(): string {
     return HDate.monthNames[
       this.month !== 12
         ? this.month - 1
@@ -153,7 +153,7 @@ export class HDate extends JDate {
     ];
   }
 
-   static monthNames = [
+  static monthNames = [
     "ניסן",
     "אייר",
     "סיון",

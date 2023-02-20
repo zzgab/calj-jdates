@@ -14,11 +14,11 @@
         const { HDate, GDate, Parasha, ParashaScheme } = CalJ;
 
         console.log("This week's Parasha:",
-          new Parasha(GDate.today(), ParashaScheme.ISRAEL)
+          Parasha.make(GDate.today(), ParashaScheme.ISRAEL)
             .getHebrewName()
         );
 
-        const h = HDate.convert(new GDate(9, 2, 2023));
+        const h = HDate.make(GDate.make(9, 2, 2023));
         console.log("9 Feb 2023 is: ",
           `${h.getDay()} ${h.getMonthName()} ${h.getYear()}`);
       &lt;/script>
@@ -37,8 +37,8 @@
       </div>
     </div>
     <script>
-      const h = HDate.convert(new GDate(9, 2, 2023));
-      document.querySelector("#parasha").innerHTML = new Parasha(GDate.today(), ParashaScheme.ISRAEL).getHebrewName();
+      const h = HDate.make(GDate.make(9, 2, 2023));
+      document.querySelector("#parasha").innerHTML = Parasha.make(GDate.today(), ParashaScheme.ISRAEL).getHebrewName();
       document.querySelector("#hDay").innerHTML = h.getDay();
       document.querySelector("#hMonth").innerHTML = h.getMonthName();
       document.querySelector("#hYear").innerHTML = h.getYear();
