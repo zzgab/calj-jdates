@@ -1,6 +1,6 @@
 {
-  "name": "@calj-net/jdates",
-  "version": "1.0.0-alpha7",
+  "name": "@calj.net/jdates",
+  "version": "1.0.0-alpha.8",
   "description": "The Jewish Dates library from https://CalJ.net",
   "homepage": "https://gitlab.plenitech.com/calj/ts-jdates",
   "scripts": {
@@ -14,7 +14,8 @@
     "deploy:netlify:prod": "netlify deploy --prod --site $NETLIFY_SITE_ID --dir dist/cdn/",
     "fixup-package-esm": "echo '{\"type\": \"module\"}' > dist/lib/esm/package.json",
     "fixup-package-cjs": "echo '{\"type\": \"commonjs\"}' > dist/lib/cjs/package.json",
-    "prepack": "npm run build && npm run fixup-package-cjs && npm run fixup-package-esm && ./fixup-ems-ext.sh",
+    "fixup-package": "npm run fixup-package-esm && npm run fixup-package-cjs",
+    "prepack": "npm run build && npm run fixup-package && ./fixup-ems-ext.sh",
     "prettier": "prettier -w package.json tsconfig.json **/*.json **/*.ts *.js */**/*.ts",
     "test": "jest"
   },
