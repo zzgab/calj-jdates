@@ -3,5 +3,6 @@ node_modules/
 .idea/
 .npmrc
 
+calj.net-jdates-*.tgz
 # Local Netlify folder
 .netlify
