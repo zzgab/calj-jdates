@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "declaration": true,
+    "declaration": false,
     "declarationMap": false,
     "outDir": "../dist/lib/esm"
   }
