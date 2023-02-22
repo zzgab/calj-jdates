@@ -71,3 +71,24 @@ You can instantiate [GDate](#GDate) and [HDate](#HDate) immutable objects, both 
   Obtain an [HDate](#HDate) instance positionned on the specified Jewish date elements.
 
 ### HDateMonth
+
+An `enum` of the Jewish months:
+
+~~~
+{
+    TISHRI,
+    CHESHVAN,
+    KISLEV,
+    TEVET,
+    SHVAT,
+    ADAR1,
+    ADAR,
+    ADAR2,
+    NISSAN,
+    IYAR,
+    SIVAN,
+    TAMUZ,
+    AV,
+    ELUL,
+}
+~~~
