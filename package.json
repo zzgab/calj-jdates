@@ -1,8 +1,8 @@
 {
   "name": "@calj.net/jdates",
-  "version": "1.0.0-alpha.13",
+  "version": "1.0.1-alpha.2",
   "description": "The Jewish Dates library from https://CalJ.net",
-  "homepage": "https://gitlab.plenitech.com/calj/ts-jdates",
+  "homepage": "https://github.com/zzgab/calj-jdates",
   "scripts": {
     "build": "npm run clean && npm run build:lib && npm run build:browser",
     "build:lib": "npm run build:esm && npm run build:cjs",
@@ -16,7 +16,7 @@
     "esm-ext": "./fixup-esm-ext.sh",
     "prepack": "npm run build && npm run fixup-package && npm run esm-ext && cp README.md dist/",
     "prettier": "prettier -w package.json tsconfig.json **/*.json **/*.ts *.js */**/*.ts",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.0",

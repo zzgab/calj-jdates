@@ -1,29 +1,47 @@
-import { JDate } from "./JDate";
+import { isDate, JDate } from "./JDate";
+
+type Ymd = { year: number; month: number; day: number };
 
 export class GDate extends JDate {
   static make(jdate: JDate): GDate;
+  static make(date: Date): GDate;
   static make(day: number, month: number, year: number): GDate;
-  static make(dayOrHdnOrJdate: number | JDate, month?: number, year?: number) {
+  static make(
+    dayOrHdnOrJdate: number | JDate | Date,
+    month?: number,
+    year?: number
+  ) {
     return new GDate(dayOrHdnOrJdate, month, year);
   }
 
   private constructor(
-    dayOrHdnOrJdate: number | JDate,
+    dayOrHdnOrJdate: number | JDate | Date,
     month?: number,
     year?: number
   ) {
-    if (typeof dayOrHdnOrJdate !== "number" || month === undefined) {
+    let params: Ymd = {} as Ymd;
+    if (isDate(dayOrHdnOrJdate)) {
+      Object.assign(params, {
+        year: dayOrHdnOrJdate.getFullYear(),
+        month: dayOrHdnOrJdate.getMonth() + 1,
+        day: dayOrHdnOrJdate.getDate(),
+      });
+      super(GDate.hdnForYmd(params.year, params.month, params.day));
+    } else if (typeof dayOrHdnOrJdate !== "number" || month === undefined) {
       super(dayOrHdnOrJdate as number);
-      const { day: d, month: m, year: y } = GDate.calcFromHdn(this.getHdn());
-      this.day = d;
-      this.month = m;
-      this.year = y;
+      Object.assign(params, GDate.calcFromHdn(this.getHdn()));
     } else {
-      super(GDate.hdnForYmd(year!, month, dayOrHdnOrJdate));
-      this.year = year!;
-      this.month = month;
-      this.day = dayOrHdnOrJdate;
+      Object.assign(params, {
+        year,
+        month,
+        day: dayOrHdnOrJdate,
+      });
+      super(GDate.hdnForYmd(params.year, params.month, params.day));
     }
+
+    this.day = params.day;
+    this.month = params.month;
+    this.year = params.year;
   }
 
   static isLeapYear(year: number): boolean {
@@ -31,38 +49,13 @@ export class GDate extends JDate {
   }
 
   static monthLength(year: number, month: number): number {
-    switch (month) {
-      case 1:
-        return 31;
-      case 2:
-        return GDate.isLeapYear(year) ? 29 : 28;
-      case 3:
-        return 31;
-      case 4:
-        return 30;
-      case 5:
-        return 31;
-      case 6:
-        return 30;
-      case 7:
-        return 31;
-      case 8:
-        return 31;
-      case 9:
-        return 30;
-      case 10:
-        return 31;
-      case 11:
-        return 30;
-      case 12:
-        return 31;
-      default:
-        return 0; //Impossible
-    }
+    return month === 2 && GDate.isLeapYear(year)
+      ? 29
+      : [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
   }
 
-  static hdnForYmd(year: number, month: number, day: number): number {
-    if (month == 0) {
+  private static hdnForYmd(year: number, month: number, day: number): number {
+    if (month <= 0) {
       month = 12;
       --year;
     } else if (month > 12) {
@@ -107,11 +100,7 @@ export class GDate extends JDate {
     return this.year;
   }
 
-  private static calcFromHdn(hdn: number): {
-    day: number;
-    month: number;
-    year: number;
-  } {
+  private static calcFromHdn(hdn: number): Ymd {
     const a = hdn + 380041;
     const b = Math.floor((4 * a + 3) / 146097);
     const c = a - Math.floor((146097 * b) / 4);

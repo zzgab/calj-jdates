@@ -4,5 +4,4 @@ node_modules/
 .npmrc
 
 calj.net-jdates-*.tgz
-# Local Netlify folder
-.netlify
+coverage/

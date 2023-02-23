@@ -41,20 +41,19 @@ export class Parasha {
     }
 
     const HY = hdate.getYear();
+    //We're going to compute the date of Bereshit:
+    //The shabbat immediately following Simchat Torah.
+
     //Get the date of Simchat Torah of the current Jewish year.
     //Note: it is safe to use 23 Tishri for Simchat Torah, even in Israel,
     //because anyway 23 Tishri can never be Shabbat, so we don't risk to skip one Shabbat.
     const hSTcandidate = HDate.make(23, HDateMonth.TISHRI, HY);
     //If we're querying the Parasha for a date between Rosh Hashana and Simchat Torah,
     //we need to rebase from previous Simchat Torah.
-    const hST = hdate.lte(hSTcandidate)
+    const hBereshit = hdate.lte(hSTcandidate)
       ? HDate.make(23, HDateMonth.TISHRI, HY - 1)
       : hSTcandidate;
-
-    //We're going to compute the date of Bereshit:
-    //The shabbat immediately following Simchat Torah.
-    //Let's rename the variable for clarity.
-    const hBereshit = HDate.make(hST);
+    const kevvia = Parasha.calcKevvia(hBereshit, israel);
 
     // n: number of full weeks between last time Bereshit was read, and this->hdate.
     // 0 means: this week's parasha is Bereshit!
@@ -64,12 +63,6 @@ export class Parasha {
         7
     );
 
-    //Compute Kevvia key: [YearLength][DayOfWeek of Rosh Hashana][Israel=1/Galut=0]
-    const yl = hBereshit.getYearLength();
-    //Day of week of Rosh Hashana, is same day as 22 Tishri, ie. eve of hBereshit
-    const dow = (hBereshit.getDayOfWeek() + 6) % 7;
-    const kevvia = yl * 100 + dow * 10 + (israel ? 1 : 0);
-
     this.parshiot = Parasha.getArrayParshiot(kevvia, n);
 
     if ((this.parshiot?.length ?? 0) === 0) {
@@ -78,6 +71,14 @@ export class Parasha {
 
     //Detect now if it is one of the 4 special parshiot:
     this.computeSpecialParasha(hdate);
+  }
+
+  private static calcKevvia(hBereshit: HDate, israel: ParashaScheme): number {
+    //Compute Kevvia key: [YearLength][DayOfWeek of Rosh Hashana][Israel=1/Galut=0]
+    const yl = hBereshit.getYearLength();
+    //Day of week of Rosh Hashana, is same day as 22 Tishri, ie. eve of hBereshit
+    const dow = (hBereshit.getDayOfWeek() + 6) % 7;
+    return yl * 100 + dow * 10 + (israel ? 1 : 0);
   }
 
   /**
@@ -94,7 +95,7 @@ export class Parasha {
    * @return array
    */
   private static getArrayParshiot(kevvia: number, n: number): number[] | null {
-    const strLayout = Parasha.getKevviaString(kevvia);
+    const strLayout = getKevviaString(kevvia);
     const c = strLayout.charAt(n);
 
     if (c == "/") {
@@ -117,67 +118,6 @@ export class Parasha {
     }
 
     return result;
-  }
-
-  /**
-   * Returns a string where each character represents a week, and whose
-   * meaning is as follows:
-   *
-   * 0 = parasha's number is same as position in string (0-based both) 1..5 =
-   * parasha's number is x + position / = no parasha this week a = two
-   * parshiot : current position and next parasha b = two parshiot :
-   * 1+position and next c..e = two parshiot, same as above but with 2+ and 3+
-   * . = parasha's number is position-1 : = parasha's number is position-2 B =
-   * two parshiot : position-1 and position C = two parshiot : position-2 and
-   * position-1
-   */
-  private static getKevviaString(kevvia: number): string {
-    switch (kevvia) {
-      case 35310:
-      case 35311:
-      case 35560:
-      case 35561:
-        return "000000000000000000000a11/0ab2c33333333d4444444e5//";
-      case 35360:
-      case 35361:
-        return "000000000000000000000a11/0ab2c33333333d4444444444/";
-      case 35420:
-      case 35510:
-        return "000000000000000000000a11/0ab2c3/2222c3d4444444e/4//";
-      case 35421:
-      case 35511:
-        return "000000000000000000000a11/0ab2c33333333d4444444e/4//";
-      case 35440:
-        return "000000000000000000000a11//.Ba1b22222222c3333333333/";
-      case 35441:
-        return "000000000000000000000a11/0ab22222222222c3333333333/";
-      case 35540:
-      case 35541:
-        return "0000000000000000000000000/.Ba1b22222222c3333333333/";
-      case 38311:
-      case 38561:
-        return "0000000000000000000000000000/.............B0000000a/0//";
-      case 38340:
-      case 38341:
-        return "00000000000000000000000000000/......................../";
-      case 38360:
-      case 38361:
-        return "0000000000000000000000000000/.............B0000000a1//";
-      case 38421:
-      case 38511:
-        return "0000000000000000000000000000/........................./";
-      case 38420:
-      case 38510:
-        return "0000000000000000000000000000//:::::::::::::C........../";
-      case 38540:
-      case 38541:
-        return "00000000000000000000000000000/.....................B0//";
-      case 38310:
-      case 38560:
-        return "0000000000000000000000000000/....../::::C.B0000000a/0//";
-      default:
-        throw new Error("Invalid Kevyya: " + kevvia);
-    }
   }
 
   private computeSpecialParasha(hdate: HDate): void {
@@ -309,8 +249,7 @@ export class Parasha {
   ] as const;
 
   public static getSidraHebrewName(n: number): string | undefined {
-    if (0 <= n && n <= 53) return Parasha.hebrewSidraNames[n];
-    return undefined;
+    return Parasha.hebrewSidraNames[n];
   }
 
   public getHebrewName(): string | undefined {
@@ -341,4 +280,83 @@ export class Parasha {
     }
     return;
   }
+}
+
+const kevviotDna = [
+  "000000000000000000000a11/0ab2c33333333d4444444e5//",
+  "000000000000000000000a11/0ab2c33333333d4444444444/",
+  "000000000000000000000a11/0ab2c3/2222c3d4444444e/4//",
+  "000000000000000000000a11/0ab2c33333333d4444444e/4//",
+  "000000000000000000000a11//.Ba1b22222222c3333333333/",
+  "000000000000000000000a11/0ab22222222222c3333333333/",
+  "0000000000000000000000000/.Ba1b22222222c3333333333/",
+  "0000000000000000000000000000/.............B0000000a/0//",
+  "00000000000000000000000000000/......................../",
+  "0000000000000000000000000000/.............B0000000a1//",
+  "0000000000000000000000000000/........................./",
+  "0000000000000000000000000000//:::::::::::::C........../",
+  "00000000000000000000000000000/.....................B0//",
+  "0000000000000000000000000000/....../::::C.B0000000a/0//",
+];
+const kevviotMap: { [kevvia: number]: number } = {
+  35310: 0, // 5726
+  35311: 0, // 5726
+  35560: 0, // 5713
+  35561: 0, // 5713
+
+  35360: 1, // 5710
+  35361: 1, // 5710
+
+  35420: 2, // 5715
+  35510: 2, // 5702
+
+  35421: 3, // 5715
+  35511: 3, // 5702
+
+  35440: 4, // 5701
+
+  35441: 5, // 5701
+
+  35540: 6, // 5734
+  35541: 6, // 5734
+
+  38311: 7, // 5719
+  38561: 7, // 5736
+
+  38340: 8, // 5714
+  38341: 8, // 5714
+
+  38360: 9, // 5703
+  38361: 9, // 5703
+
+  38421: 10, // 5711
+  38511: 10, // 5708
+
+  38420: 11, // 5711
+  38510: 11, // 5708
+
+  38540: 12, // 5700
+  38541: 12, // 5700
+
+  38310: 13, // 5719
+  38560: 13, // 5736
+};
+
+/**
+ * Returns a string where each character represents a week, and whose
+ * meaning is as follows:
+ *
+ * 0    = parasha's number is same as position in string (0-based both)
+ * 1..5 = parasha's number is x + position
+ * /    = no parasha this week
+ * a    = two parshiot : current position and next parasha
+ * b    = two parshiot : 1+position and next
+ * c..e = two parshiot, same as above but with 2+ and 3+
+ * .    = parasha's number is position-1
+ * :    = parasha's number is position-2
+ * B    = two parshiot : position-1 and position
+ * C    = two parshiot : position-2 and position-1
+ */
+function getKevviaString(kevvia: number): string {
+  return kevviotDna[kevviotMap[kevvia]];
 }

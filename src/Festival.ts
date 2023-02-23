@@ -58,6 +58,21 @@ const checkCache = (
 };
 
 export class Festival {
+  public static yomKippur(hyear: number): Festival {
+    return checkCache(FestivalType.PESACH, hyear, ParashaScheme.ISRAEL, () => {
+      const hStart = HDate.make(10, HDateMonth.TISHRI, hyear);
+      return new Festival(
+        !!ParashaScheme.ISRAEL,
+        FestivalType.YOM_KIPPUR,
+        hStart,
+        hStart,
+        [true],
+        null,
+        true
+      );
+    });
+  }
+
   public static pesach(hyear: number, israel: ParashaScheme): Festival {
     return checkCache(FestivalType.PESACH, hyear, israel, () => {
       const hStart = HDate.make(15, HDateMonth.NISSAN, hyear);

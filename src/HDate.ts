@@ -1,4 +1,4 @@
-import { JDate } from "./JDate";
+import { isDate, JDate } from "./JDate";
 import { GDate } from "./GDate";
 
 const uday = 25920; // 24 * 1080
@@ -14,7 +14,6 @@ export enum HDateMonth {
   KISLEV = 9,
   TEVET = 10,
   SHVAT = 11,
-  ADAR1 = 12,
   ADAR = 12,
   ADAR2 = 13,
   NISSAN = 1,
@@ -35,9 +34,10 @@ const cacheRH = new Map<number, number>();
 
 export class HDate extends JDate {
   static make(jdate: JDate): HDate;
+  static make(date: Date): HDate;
   static make(day: number, month: number, year: number): HDate;
   static make(
-    dayOrHdnOrJdate: number | JDate,
+    dayOrHdnOrJdate: number | JDate | Date,
     month?: number,
     year?: number
   ): HDate {
@@ -45,16 +45,14 @@ export class HDate extends JDate {
   }
 
   private constructor(
-    dayOrHdnOrJdate: number | JDate,
+    dayOrHdnOrJdate: number | JDate | Date,
     month?: number,
     year?: number
   ) {
     if (typeof dayOrHdnOrJdate === "number") {
-      if (month !== undefined) {
-        super(HDate.hdnForYmd(year!, month, dayOrHdnOrJdate));
-      } else {
-        super(dayOrHdnOrJdate);
-      }
+      super(HDate.hdnForYmd(year!, month!, dayOrHdnOrJdate));
+    } else if (isDate(dayOrHdnOrJdate)) {
+      super(GDate.make(dayOrHdnOrJdate));
     } else {
       super(dayOrHdnOrJdate);
     }
@@ -73,7 +71,7 @@ export class HDate extends JDate {
     return this.year;
   }
 
-  getMonth(): number {
+  getMonth(): HDateMonth {
     return this.month;
   }
 
@@ -93,35 +91,27 @@ export class HDate extends JDate {
     return HDate.embolismicYear(hyear) ? 13 : 12;
   }
 
-  static monthLength(hyear: number, hmonth: number, yearType: number): number {
-    switch (hmonth) {
-      case HDateMonth.TISHRI:
-      case HDateMonth.AV:
-      case HDateMonth.NISSAN:
-      case HDateMonth.SIVAN:
-      case HDateMonth.SHVAT:
-        return 30;
-      case HDateMonth.CHESHVAN:
-        if (yearType == HDateYearType.SHLEMA) {
-          return 30;
-        }
-        return 29;
-      case HDateMonth.KISLEV:
-        if (yearType == HDateYearType.CHASERA) {
-          return 29;
-        }
-        return 30;
-      case HDateMonth.TEVET:
-      case HDateMonth.ADAR2:
-      case HDateMonth.IYAR:
-      case HDateMonth.TAMUZ:
-      case HDateMonth.ELUL:
-        return 29;
-      case HDateMonth.ADAR:
-        return HDate.embolismicYear(hyear) ? 30 : 29;
-      default:
-        return 0; //Impossible.
-    }
+  private static monthLength(
+    hyear: number,
+    hmonth: HDateMonth,
+    yearType: number
+  ): number {
+    const months = {
+      [HDateMonth.TISHRI]: 30,
+      [HDateMonth.CHESHVAN]: yearType === HDateYearType.SHLEMA ? 30 : 29,
+      [HDateMonth.KISLEV]: yearType === HDateYearType.CHASERA ? 29 : 30,
+      [HDateMonth.TEVET]: 29,
+      [HDateMonth.SHVAT]: 30,
+      [HDateMonth.ADAR]: HDate.embolismicYear(hyear) ? 30 : 29,
+      [HDateMonth.ADAR2]: 29,
+      [HDateMonth.NISSAN]: 30,
+      [HDateMonth.IYAR]: 29,
+      [HDateMonth.SIVAN]: 30,
+      [HDateMonth.TAMUZ]: 29,
+      [HDateMonth.AV]: 30,
+      [HDateMonth.ELUL]: 29,
+    };
+    return months[hmonth];
   }
 
   static embolismicYear(hyear: number): boolean {
@@ -139,16 +129,12 @@ export class HDate extends JDate {
   }
 
   getYearLength(): number {
-    switch (this.yearType) {
-      case HDateYearType.CHASERA:
-        return this.isEmbolismic() ? 383 : 353;
-      case HDateYearType.SDURA:
-        return this.isEmbolismic() ? 384 : 354;
-      case HDateYearType.SHLEMA:
-        return this.isEmbolismic() ? 385 : 355;
-      default:
-        return 0;
-    }
+    const yearTypeMap: Record<HDateYearType, (leap: boolean) => number> = {
+      [HDateYearType.CHASERA]: (leap) => (leap ? 383 : 353),
+      [HDateYearType.SDURA]: (leap) => (leap ? 384 : 354),
+      [HDateYearType.SHLEMA]: (leap) => (leap ? 385 : 355),
+    };
+    return yearTypeMap[this.yearType](this.isEmbolismic());
   }
 
   getMonthName(): string {
@@ -185,8 +171,7 @@ export class HDate extends JDate {
     let hmonth = HDateMonth.TISHRI;
     const hyear = year;
 
-    const isEmbolismic = HDate.embolismicYear(hyear);
-    const nbMonths = isEmbolismic ? 13 : 12;
+    const nbMonths = HDate.embolismicYear(hyear) ? 13 : 12;
 
     if (month > nbMonths) month = nbMonths;
 
@@ -295,5 +280,5 @@ export class HDate extends JDate {
   private year: number;
   private month: number;
   private day: number;
-  private yearType: number;
+  private yearType: HDateYearType;
 }

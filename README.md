@@ -1,4 +1,5 @@
 # @calj.net/jdates
+[![npm version](https://badge.fury.io/js/@calj.net%2Fjdates.svg)](https://badge.fury.io/js/@calj.net%2Fjdates)
 
 The Jewish dates toolbox used on [https://calj.net](https://calj.net).
 - Manipulate Jewish and Gregorian dates
@@ -6,10 +7,26 @@ The Jewish dates toolbox used on [https://calj.net](https://calj.net).
 - Compute the weekly Parasha
 - Compute the dates of the Holidays
 
+![CalJ.net](https://calj.net/img/title.jpg)
+
 ## Modes
-The library can be used in Node (both *ESM* and *CommonJS*) and in the browser:
+The library can be used in [Node](https://www.npmjs.com/package/@calj.net/jdates) (both **ESM** and **CommonJS**) and in the [browser](https://cdn.jsdelivr.net/npm/@calj.net/jdates):
+
+### Node
+
+~~~
+import { GDate, HDate, Festival, Parasha } from "@calj.net/jdates";
+
+// or
+
+const { GDate, HDate, Festival, Parasha } = require("@calj.net/jdates");
+~~~
+
+### Browser
+
 ~~~
 <html>
+  <!-- This script installs the lib in window.CalJ -->
   <script
     src="https://cdn.jsdelivr.net/npm/@calj.net/jdates">
   </script>
@@ -33,7 +50,7 @@ The library can be used in Node (both *ESM* and *CommonJS*) and in the browser:
     console.log("9 Feb 2023 is: ",
       `${h.getDay()} ${h.getMonthName()} ${h.getYear()}`);
 
-    const yomKippur = Festival.makeYomKippur(5780);
+    const yomKippur = Festival.yomKippur(5780);
     const gYomKippur = GDate.make(yomKippur.getStartDate());
     console.log("Yom Kippur 5780 is: ", `${gYomKippur}`);
   </script>
@@ -45,6 +62,12 @@ The library can be used in Node (both *ESM* and *CommonJS*) and in the browser:
 You can instantiate [GDate](#GDate) and [HDate](#HDate) immutable objects, both extending the `JDate` abstract.
 
 ### GDate
+
+* `static GDate.`**make**`(date: Date): GDate`
+
+  \
+  Obtain a Gregorian date from a JavaScript Date instance.
+
 
 * `static GDate.`**make**`(jdate: JDate): GDate`
 
@@ -58,6 +81,12 @@ You can instantiate [GDate](#GDate) and [HDate](#HDate) immutable objects, both 
   Obtain a [GDate](#GDate) instance positionned on the specified Gregorian date elements.
 
 ### HDate
+
+* `static HDate.`**make**`(date: Date): HDate`
+
+  \
+  Obtain a Jewish date from a JavaScript Date instance.
+
 
 * `static HDate.`**make**`(jdate: JDate): HDate`
 
@@ -81,7 +110,6 @@ An `enum` of the Jewish months:
     KISLEV,
     TEVET,
     SHVAT,
-    ADAR1,
     ADAR,
     ADAR2,
     NISSAN,
@@ -92,3 +120,14 @@ An `enum` of the Jewish months:
     ELUL,
 }
 ~~~
+
+### JDate
+
+ - `.eq`, `.lt`, `.lte`, `.gt`, `.gte (other: JDate): boolean`
+ 
+    \
+    Boolean functions accepting an instance of `JDate`, to check respectively
+    if the argument is `==`, `<`, `<=`, `>`, `>=` to `this` instance.
+    The comparison is done on the date itself, as a point in time, rather than
+    equality of the objects or any other date components that represent the date
+    in one system or the other.

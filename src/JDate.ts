@@ -1,3 +1,11 @@
+export function isDate(date: unknown): date is Date {
+  return (
+    date !== null &&
+    typeof date === "object" &&
+    date.constructor.name === "Date"
+  );
+}
+
 export enum DayOfWeek {
   SHABBAT = 6,
 }
@@ -17,6 +25,14 @@ export abstract class JDate {
 
   protected setHdn(hdn: number) {
     this.hdn = hdn;
+  }
+
+  public lt(other: JDate): boolean {
+    return this.hdn < other.hdn;
+  }
+
+  public eq(other: JDate): boolean {
+    return this.hdn === other.hdn;
   }
 
   public lte(other: JDate): boolean {
