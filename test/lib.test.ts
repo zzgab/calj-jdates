@@ -1,7 +1,12 @@
-import { GDate, HDate, Parasha, ParashaScheme } from "./index";
-import { HDateMonth } from "./HDate";
-import { Festival } from "./Festival";
-import { ParashaSpecial } from "./Parasha";
+import {
+  Festival,
+  GDate,
+  HDate,
+  HDateMonth,
+  Parasha,
+  ParashaScheme,
+} from "../src";
+import { ParashaSpecial } from "../src/Parasha";
 
 describe("HDate", () => {
   beforeEach(() => jest.clearAllMocks());

@@ -1,6 +1,7 @@
 import { DayOfWeek, JDate } from "./JDate";
 import { HDate, HDateMonth } from "./HDate";
 import { Festival } from "./Festival";
+import { ParashaScheme } from "./ParashaScheme";
 
 export enum ParashaSpecial {
   SHEQALIM = "SHEQALIM",
@@ -17,11 +18,6 @@ const specialParashaNames: Record<ParashaSpecial, string> = {
   [ParashaSpecial.HACHODESH]: "החודש",
   [ParashaSpecial.HAGADOL]: "הגדול",
 };
-
-export enum ParashaScheme {
-  ISRAEL = 1,
-  WORLD = 0,
-}
 
 export class Parasha {
   public static make(jdate: JDate, israel?: ParashaScheme) {

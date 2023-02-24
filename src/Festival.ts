@@ -1,6 +1,6 @@
 import { HDate, HDateMonth } from "./HDate";
-import { ParashaScheme } from "./Parasha";
 import { JDate } from "./JDate";
+import { ParashaScheme } from "./ParashaScheme";
 
 enum FestivalType {
   ROSH_HASHANA = 0,
