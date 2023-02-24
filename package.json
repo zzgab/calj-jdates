@@ -1,6 +1,6 @@
 {
   "name": "@calj.net/jdates",
-  "version": "1.0.1-alpha.2",
+  "version": "1.0.1-alpha.3",
   "description": "The Jewish Dates library from https://CalJ.net",
   "homepage": "https://github.com/zzgab/calj-jdates",
   "scripts": {
@@ -8,17 +8,16 @@
     "build:lib": "npm run build:esm && npm run build:cjs",
     "build:esm": "tsc -p config/tsconfig.esm.json",
     "build:cjs": "tsc -p config/tsconfig.cjs.json",
-    "build:browser": "rollup -c",
+    "build:browser": "rollup -c config/rollup.config.js",
     "replace-version": "config/replace-version.sh $npm_package_version",
     "clean": "rm -rf dist coverage *.tgz",
-    "e2e": "test/e2e.sh",
+    "package-e2e": "test/e2e.sh",
     "fixup-package-esm": "echo '{\"type\": \"module\"}' > dist/lib/esm/package.json",
     "fixup-package-cjs": "echo '{\"type\": \"commonjs\"}' > dist/lib/cjs/package.json",
     "fixup-package": "npm run fixup-package-esm && npm run fixup-package-cjs",
     "esm-ext": "config/fixup-esm-ext.sh",
     "postbuild": "npm run replace-version",
     "prepack": "npm run test && npm run build && npm run fixup-package && npm run esm-ext && cp README.md dist/",
-    "postpack": "npm run e2e",
     "prettier": "prettier -w package.json config/tsconfig.json **/*.json **/*.ts *.js */**/*.ts",
     "test": "jest --coverage"
   },
