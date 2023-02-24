@@ -1,6 +1,6 @@
 {
   "name": "@calj.net/jdates",
-  "version": "1.0.1-alpha.3",
+  "version": "1.0.1-alpha.4",
   "description": "The Jewish Dates library from https://CalJ.net",
   "homepage": "https://github.com/zzgab/calj-jdates",
   "scripts": {
@@ -11,7 +11,7 @@
     "build:browser": "rollup -c config/rollup.config.js",
     "replace-version": "config/replace-version.sh $npm_package_version",
     "clean": "rm -rf dist coverage *.tgz",
-    "package-e2e": "test/e2e.sh",
+    "package-e2e": "test/e2e/e2e.sh",
     "fixup-package-esm": "echo '{\"type\": \"module\"}' > dist/lib/esm/package.json",
     "fixup-package-cjs": "echo '{\"type\": \"commonjs\"}' > dist/lib/cjs/package.json",
     "fixup-package": "npm run fixup-package-esm && npm run fixup-package-cjs",

@@ -1,5 +1,5 @@
 import { HDate, HDateMonth } from "./HDate";
-import { JDate } from "./JDate";
+import { DayOfWeek, JDate } from "./JDate";
 import { ParashaScheme } from "./ParashaScheme";
 
 enum FestivalType {
@@ -33,6 +33,8 @@ enum FestivalType {
 }
 
 const festivalNames: { [k: number]: string } = {
+  [FestivalType.ROSH_HASHANA]: "ראש השנה",
+  [FestivalType.GDALIA]: "גדליה",
   [FestivalType.PESACH]: "פסח",
   [FestivalType.SHAVUOT]: "שבועות",
 };
@@ -58,16 +60,48 @@ const checkCache = (
 };
 
 export class Festival {
+  public static roshHashana(hyear: number): Festival {
+    return checkCache(
+      FestivalType.ROSH_HASHANA,
+      hyear,
+      ParashaScheme.WORLD,
+      () =>
+        new Festival(
+          ParashaScheme.WORLD,
+          FestivalType.ROSH_HASHANA,
+          HDate.make(1, HDateMonth.TISHRI, hyear),
+          HDate.make(2, HDateMonth.TISHRI, hyear),
+          [true, true],
+          true
+        )
+    );
+  }
+
+  public static gdalia(hyear: number): Festival {
+    return checkCache(FestivalType.GDALIA, hyear, ParashaScheme.WORLD, () => {
+      const h3 = HDate.make(3, HDateMonth.TISHRI, hyear);
+      const h = h3.getDayOfWeek() === DayOfWeek.SHABBAT ? h3.plus(1) : h3;
+
+      return new Festival(
+        ParashaScheme.WORLD,
+        FestivalType.GDALIA,
+        h,
+        h,
+        [],
+        false
+      );
+    });
+  }
+
   public static yomKippur(hyear: number): Festival {
     return checkCache(FestivalType.PESACH, hyear, ParashaScheme.ISRAEL, () => {
       const hStart = HDate.make(10, HDateMonth.TISHRI, hyear);
       return new Festival(
-        !!ParashaScheme.ISRAEL,
+        ParashaScheme.ISRAEL,
         FestivalType.YOM_KIPPUR,
         hStart,
         hStart,
         [true],
-        null,
         true
       );
     });
@@ -78,12 +112,11 @@ export class Festival {
       const hStart = HDate.make(15, HDateMonth.NISSAN, hyear);
       const hEnd = HDate.make(21 + (israel ? 0 : 1), HDateMonth.NISSAN, hyear);
       return new Festival(
-        !!israel,
+        israel,
         FestivalType.PESACH,
         hStart,
         hEnd,
         [true, !israel, false, false, false, false, true, !israel],
-        null,
         true
       );
     });
@@ -94,12 +127,11 @@ export class Festival {
       const hStart = HDate.make(6, HDateMonth.SIVAN, hyear);
       const hEnd = HDate.make(6 + (israel ? 0 : 1), HDateMonth.SIVAN, hyear);
       return new Festival(
-        !!israel,
+        israel,
         FestivalType.SHAVUOT,
         hStart,
         hEnd,
         [true, !israel],
-        null,
         true
       );
     });
@@ -135,12 +167,11 @@ export class Festival {
   }
 
   private constructor(
-    private _israel: boolean,
+    private _israel: ParashaScheme,
     private type: FestivalType,
     private startDate: HDate,
     private endDate: HDate,
     private _yamimTovim: boolean[],
-    private _zmaner: null,
     private _startsEve: boolean
   ) {}
 

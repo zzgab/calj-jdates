@@ -165,6 +165,21 @@ describe("Parasha", () => {
 });
 
 describe("Festival", () => {
+  it("should calculate Rosh Hashana", () => {
+    expect(GDate.make(Festival.roshHashana(5787).getEndDate()).toString()).toBe(
+      "2026-09-13"
+    );
+  });
+
+  it("should calculate Gdalia", () => {
+    expect(GDate.make(Festival.gdalia(5788).getStartDate()).toString()).toBe(
+      "2027-10-04"
+    );
+    expect(GDate.make(Festival.gdalia(5789).getStartDate()).toString()).toBe(
+      "2028-09-24"
+    );
+  });
+
   it("should calculate Pesach", () => {
     expect(
       GDate.make(
