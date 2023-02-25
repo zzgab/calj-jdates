@@ -2,6 +2,8 @@ import { HDate, HDateMonth } from "./HDate";
 import { DayOfWeek, JDate } from "./JDate";
 import { ParashaScheme } from "./ParashaScheme";
 
+type ExecutorArgs = [number, ParashaScheme];
+
 enum FestivalType {
   ROSH_HASHANA = 0,
   GDALIA = 1,
@@ -29,34 +31,6 @@ enum FestivalType {
   AV_9 = 23,
   AV_15 = 24,
 }
-
-const festivalNames: Record<FestivalType, string> = {
-  [FestivalType.ROSH_HASHANA]: "ראש השנה",
-  [FestivalType.GDALIA]: "גדליה",
-  [FestivalType.YOM_KIPPUR]: "יום כיפור",
-  [FestivalType.SUCCOT]: "סוכות",
-  [FestivalType.HOSHAANA_RABBA]: "הושענה רבה",
-  [FestivalType.SHMINI_ATSERET]: "שמיני עצרת",
-  [FestivalType.SIMCHAT_TORAH]: "שמחת תורה",
-  [FestivalType.CHANUKA]: "חנוכה",
-  [FestivalType.TEVET_10]: "תענית טבת",
-  [FestivalType.SHVAT_15]: "טו בשבט",
-  [FestivalType.PURIM_QATAN]: "פורים קטן",
-  [FestivalType.PURIM_FAST]: "תענית אסתר",
-  [FestivalType.PURIM]: "פורים",
-  [FestivalType.PURIM_SHUSHAN]: "פורים שושן",
-  [FestivalType.PESACH]: "פסח",
-  [FestivalType.YOM_HASHOA]: "יום השואה",
-  [FestivalType.YOM_HAZICARON]: "יום הזכרון",
-  [FestivalType.YOM_HAATSMAUT]: "יום העצמאות",
-  [FestivalType.PESACH_SHENI]: "פסח שני",
-  [FestivalType.OMER_33]: "לג בעומר",
-  [FestivalType.YOM_YERUSHALAYM]: "יום ירושלים",
-  [FestivalType.SHAVUOT]: "שבועות",
-  [FestivalType.TAMUZ_17]: "יז תמוז",
-  [FestivalType.AV_9]: "תשעה באב",
-  [FestivalType.AV_15]: "טו באב",
-};
 
 const cache = new Map<number, Festival>();
 
@@ -244,14 +218,14 @@ export class Festival {
   }
 
   public static purimQatan(hyear: number): Festival | null {
+    if (!HDate.embolismicYear(hyear)) {
+      return null;
+    }
     return checkCache(
       FestivalType.PURIM_QATAN,
       hyear,
       ParashaScheme.WORLD,
       () => {
-        if (!HDate.embolismicYear(hyear)) {
-          return null;
-        }
         return new Festival(
           ParashaScheme.WORLD,
           FestivalType.PURIM_QATAN,
@@ -409,16 +383,16 @@ export class Festival {
   }
 
   public static yomHaZicaron(hyear: number): Festival | null {
+    const yomHaAtsmaut = Festival.yomHaAtsmaut(hyear);
+    // On a year when there is no Yom haAtsma'ut, there isn't a Yom haZicaron too.
+    if (null === yomHaAtsmaut) {
+      return null;
+    }
     return checkCache(
       FestivalType.YOM_HAZICARON,
       hyear,
       ParashaScheme.WORLD,
       () => {
-        const yomHaAtsmaut = Festival.yomHaAtsmaut(hyear);
-        // On a year when there is no Yom haAtsma'ut, there isn't a Yom haZicaron too.
-        if (null === yomHaAtsmaut) {
-          return null;
-        }
         return new Festival(
           ParashaScheme.WORLD,
           FestivalType.YOM_HAZICARON,
@@ -553,22 +527,29 @@ export class Festival {
     });
   }
 
-  public static onDate(
-    hdate: HDate,
-    israel: ParashaScheme
-  ): Festival[] | undefined {
-    if (hdate.getMonth() === HDateMonth.NISSAN) {
-      const festival = Festival.pesach(hdate.getYear(), israel);
-      if (festival.contains(hdate)) {
-        return [festival];
+  public static onDate(hdate: HDate, israel: ParashaScheme): Festival[] {
+    const festivals = [];
+    const hyear = hdate.getYear();
+    let started = false;
+    for (
+      let type = FestivalType.ROSH_HASHANA;
+      type <= FestivalType.AV_15;
+      type++
+    ) {
+      const festival = Festival.make(type, hyear, israel);
+      if (!festival) {
+        continue;
       }
-    } else if (hdate.getMonth() === HDateMonth.SIVAN) {
-      const festival = Festival.shavuot(hdate.getYear(), israel);
       if (festival.contains(hdate)) {
-        return [festival];
+        festivals.push(festival);
+        started = true;
+      } else {
+        if (started) {
+          break;
+        }
       }
     }
-    return undefined;
+    return festivals;
   }
 
   public contains(jdate: JDate): boolean {
@@ -595,7 +576,7 @@ export class Festival {
   }
 
   public getName(): string {
-    return festivalNames[this.type];
+    return Festival.executorMap[this.type].name;
   }
 
   public getYamimTovim(): boolean[] {
@@ -604,4 +585,85 @@ export class Festival {
 
   private readonly endDate: HDate;
   private readonly yamimTovim: boolean[];
+
+  private static readonly executorMap: Record<
+    FestivalType,
+    { executor: (...args: ExecutorArgs) => Festival | null; name: string }
+  > = {
+    [FestivalType.ROSH_HASHANA]: {
+      name: "ראש השנה",
+      executor: Festival.roshHashana,
+    },
+    [FestivalType.GDALIA]: { name: "גדליה", executor: Festival.gdalia },
+    [FestivalType.YOM_KIPPUR]: {
+      name: "יום כיפור",
+      executor: Festival.yomKippur,
+    },
+    [FestivalType.SUCCOT]: { name: "סוכות", executor: Festival.succot },
+    [FestivalType.HOSHAANA_RABBA]: {
+      name: "הושענה רבה",
+      executor: Festival.hoshaanaRabba,
+    },
+    [FestivalType.SHMINI_ATSERET]: {
+      name: "שמיני עצרת",
+      executor: Festival.shminiAtseret,
+    },
+    [FestivalType.SIMCHAT_TORAH]: {
+      name: "שמחת תורה",
+      executor: Festival.simchatTorah,
+    },
+    [FestivalType.CHANUKA]: { name: "חנוכה", executor: Festival.chanuka },
+    [FestivalType.TEVET_10]: {
+      name: "תענית טבת",
+      executor: Festival.tevet10,
+    },
+    [FestivalType.SHVAT_15]: { name: "טו בשבט", executor: Festival.shvat15 },
+    [FestivalType.PURIM_QATAN]: {
+      name: "פורים קטן",
+      executor: Festival.purimQatan,
+    },
+    [FestivalType.PURIM_FAST]: {
+      name: "תענית אסתר",
+      executor: Festival.purimFast,
+    },
+    [FestivalType.PURIM]: { name: "פורים", executor: Festival.purim },
+    [FestivalType.PURIM_SHUSHAN]: {
+      name: "פורים שושן",
+      executor: Festival.purimShushan,
+    },
+    [FestivalType.PESACH]: { name: "פסח", executor: Festival.pesach },
+    [FestivalType.YOM_HASHOA]: {
+      name: "יום השואה",
+      executor: Festival.yomHaShoa,
+    },
+    [FestivalType.YOM_HAZICARON]: {
+      name: "יום הזכרון",
+      executor: Festival.yomHaZicaron,
+    },
+    [FestivalType.YOM_HAATSMAUT]: {
+      name: "יום העצמאות",
+      executor: Festival.yomHaAtsmaut,
+    },
+    [FestivalType.PESACH_SHENI]: {
+      name: "פסח שני",
+      executor: Festival.pesachSheni,
+    },
+    [FestivalType.OMER_33]: { name: "לג בעומר", executor: Festival.omer33 },
+    [FestivalType.YOM_YERUSHALAYM]: {
+      name: "יום ירושלים",
+      executor: Festival.yomYerushalaym,
+    },
+    [FestivalType.SHAVUOT]: { name: "שבועות", executor: Festival.shavuot },
+    [FestivalType.TAMUZ_17]: { name: "יז תמוז", executor: Festival.tamuz17 },
+    [FestivalType.AV_9]: { name: "תשעה באב", executor: Festival.av9 },
+    [FestivalType.AV_15]: { name: "טו באב", executor: Festival.av15 },
+  };
+
+  private static make(
+    type: FestivalType,
+    hyear: number,
+    israel: ParashaScheme
+  ): Festival | null {
+    return Festival.executorMap[type].executor(hyear, israel);
+  }
 }

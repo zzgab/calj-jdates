@@ -204,13 +204,26 @@ describe("Festival", () => {
       "5780-07-10"
     );
   });
+
   it("should return onDate nothing", () => {
     expect(
       Festival.onDate(
         HDate.make(12, HDateMonth.CHESHVAN, 5755),
         ParashaScheme.WORLD
       )
-    ).toBe(undefined);
+    ).toStrictEqual([]);
+  });
+
+  it("should return Succot and HoshaanaRabba onDate", () => {
+    expect(
+      Festival.onDate(
+        HDate.make(21, HDateMonth.TISHRI, 5755),
+        ParashaScheme.WORLD
+      )
+    ).toStrictEqual([
+      Festival.succot(5755, ParashaScheme.WORLD),
+      Festival.hoshaanaRabba(5755),
+    ]);
   });
 
   it("should compute end date", () => {
