@@ -7,6 +7,9 @@ export function isDate(date: unknown): date is Date {
 }
 
 export enum DayOfWeek {
+  RISHON = 0,
+  MONDAY = 1,
+  SHISHI = 5,
   SHABBAT = 6,
 }
 

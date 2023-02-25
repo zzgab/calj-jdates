@@ -180,6 +180,14 @@ describe("Festival", () => {
     );
   });
 
+  it("should calculate Succot", () => {
+    expect(
+      GDate.make(
+        Festival.succot(5789, ParashaScheme.ISRAEL).getStartDate()
+      ).toString()
+    ).toBe("2028-10-05");
+  });
+
   it("should calculate Pesach", () => {
     expect(
       GDate.make(

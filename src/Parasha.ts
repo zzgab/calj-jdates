@@ -62,7 +62,7 @@ export class Parasha {
     this.parshiot = Parasha.getArrayParshiot(kevvia, n);
 
     if ((this.parshiot?.length ?? 0) === 0) {
-      this.festival = Festival.onDate(hdate, israel);
+      this.festival = Festival.onDate(hdate, israel)?.[0];
     }
 
     //Detect now if it is one of the 4 special parshiot:
