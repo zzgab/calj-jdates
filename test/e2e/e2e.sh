@@ -1,4 +1,8 @@
-project_dir=$(dirname $(realpath "$0"/../..))
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+project_dir=$(dirname $(dirname $(dirname $(realpath "$0"))))
 tmpdir=$(mktemp -d)
 cd $tmpdir
 npm i $project_dir/calj.net-jdates-$npm_package_version.tgz
@@ -12,7 +16,7 @@ result=$(node index.js)
 if [[ "$result" == "2023-02-23" ]]; then
   echo "cjs:     PASS"
 else
-  echo "cjs:     FAIL"
+  >&2 echo "cjs:     FAIL"
   status=1
 fi
 
@@ -23,7 +27,7 @@ result=$(node index.js)
 if [[ "$result" == "2023-02-23" ]]; then
   echo "ems:     PASS"
 else
-  echo "ems:     FAIL"
+  >&2 echo "ems:     FAIL"
   status=1
 fi
 
@@ -36,7 +40,7 @@ result=$(node test.js)
 if [[ "$result" == "2023-02-23" ]]; then
   echo "browser: PASS"
 else
-  echo "browser: FAIL"
+  >&2 echo "browser: FAIL"
   status=1
 fi
 

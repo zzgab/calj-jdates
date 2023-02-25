@@ -15,5 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - run: npm ci
-    - run: npm run pack
-    - run: npm package-e2e
+    - run: npm run test
+    - run: npm run build
+    - run: npm pack
+    - run: npm run package-e2e
