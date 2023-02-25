@@ -239,6 +239,18 @@ describe("Festival", () => {
         .eq(HDate.make(6, HDateMonth.SIVAN, 5783))
     ).toBe(true);
   });
+
+  it("should compute Barekh Aleinu", () => {
+    expect(Festival.winterEve(2022, ParashaScheme.WORLD).toString()).toEqual(
+      "2022-12-04"
+    );
+    expect(Festival.winterEve(2023, ParashaScheme.WORLD).toString()).toEqual(
+      "2023-12-05"
+    );
+    expect(Festival.winterEve(2023, ParashaScheme.ISRAEL).toString()).toEqual(
+      "2023-10-21"
+    );
+  });
 });
 
 describe("JDate", () => {

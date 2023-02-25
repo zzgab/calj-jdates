@@ -1,6 +1,7 @@
 import { HDate, HDateMonth } from "./HDate";
 import { DayOfWeek, JDate } from "./JDate";
 import { ParashaScheme } from "./ParashaScheme";
+import { GDate } from "./GDate";
 
 type ExecutorArgs = [number, ParashaScheme];
 
@@ -581,6 +582,30 @@ export class Festival {
 
   public getYamimTovim(): boolean[] {
     return this.yamimTovim;
+  }
+
+  /**
+   * Returns the Gregorian day _whose evening_ (Arvit) is first time
+   * we recite Barekh Aleinu (winter prayer in Amida)
+   * In Israel: 7th Cheshvan
+   * In Hu"L : Dec. 4th (or 5th, if the following Greg year is a leap year).
+   *           If Friday night -> postponed to Sat. night.
+   */
+  public static winterEve(gyear: number, israel: ParashaScheme): GDate {
+    if (israel) {
+      return GDate.make(
+        HDate.make(
+          6,
+          HDateMonth.CHESHVAN,
+          HDate.make(GDate.make(1, 12, gyear)).getYear()
+        )
+      );
+    }
+    let g = GDate.make(GDate.isLeapYear(gyear + 1) ? 5 : 4, 12, gyear);
+    if (g.getDayOfWeek() == DayOfWeek.SHISHI) {
+      return g.plus(1);
+    }
+    return g;
   }
 
   private readonly endDate: HDate;

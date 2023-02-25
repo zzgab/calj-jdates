@@ -100,6 +100,10 @@ export class GDate extends JDate {
     return this.year;
   }
 
+  plus(days: number): GDate {
+    return new GDate(this.getHdn() + days);
+  }
+
   private static calcFromHdn(hdn: number): Ymd {
     const a = hdn + 380041;
     const b = Math.floor((4 * a + 3) / 146097);
