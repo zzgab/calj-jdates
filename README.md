@@ -1,5 +1,5 @@
 # @calj.net/jdates
-[![npm version](https://badge.fury.io/js/@calj.net%2Fjdates.svg)](https://badge.fury.io/js/@calj.net%2Fjdates)
+![npm version](https://img.shields.io/badge/dynamic/json?logo=npm&url=https://registry.npmjs.org/-/package/@calj.net/jdates/dist-tags&label=npm&color=success&query=$.latest)
 
 The Jewish dates toolbox used on [https://calj.net](https://calj.net).
 - Manipulate Jewish and Gregorian dates
