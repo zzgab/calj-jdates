@@ -19,7 +19,7 @@
     "postbuild": "npm run replace-version",
     "prepack": "npm run test && npm run build && npm run fixup-package && npm run esm-ext && cp README.md dist/",
     "prettier": "prettier -w package.json config/tsconfig.json **/*.json **/*.ts *.js */**/*.ts",
-    "test": "jest --coverage"
+    "test": "jest --config config/jest.config.js --coverage"
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.0",
