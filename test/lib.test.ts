@@ -73,18 +73,18 @@ describe("GDate", () => {
 describe("Parasha", () => {
   it("should calculate the kevviot", () => {
     const data: [number, number, number, ParashaScheme, string][] = [
-      [15, 2, 5726, ParashaScheme.WORLD, "אמור"], // 35310
-      [15, 2, 5710, ParashaScheme.ISRAEL, "אמור"], // 35361
-      [16, 2, 5702, ParashaScheme.WORLD, "בהר - בחקתי"], // 35510
-      [4, 8, 5702, ParashaScheme.ISRAEL, "נח"], // 35511
-      [5, 12, 5701, ParashaScheme.WORLD, "תצוה"], // 35440
-      [15, 2, 5736, ParashaScheme.ISRAEL, "בהר"], // 38561
-      [15, 2, 5714, ParashaScheme.WORLD, "בחקתי"], // 38340
-      [15, 2, 5703, ParashaScheme.ISRAEL, "בהר"], // 38361
-      [15, 2, 5708, ParashaScheme.ISRAEL, "בחקתי"], // 38511
-      [15, 2, 5708, ParashaScheme.WORLD, "בהר"], // 38510
-      [15, 2, 5700, ParashaScheme.WORLD, "בחקתי"], // 38540
-      [15, 2, 5736, ParashaScheme.WORLD, "בהר"], // 38560
+      [15, 2, 5726, ParashaScheme.WORLD, "אמור"], // 5310
+      [15, 2, 5710, ParashaScheme.ISRAEL, "אמור"], // 5361
+      [16, 2, 5702, ParashaScheme.WORLD, "בהר - בחקתי"], // 5510
+      [4, 8, 5702, ParashaScheme.ISRAEL, "נח"], // 5511
+      [5, 12, 5701, ParashaScheme.WORLD, "תצוה"], // 5440
+      [15, 2, 5736, ParashaScheme.ISRAEL, "בהר"], // 8561
+      [15, 2, 5714, ParashaScheme.WORLD, "בחקתי"], // 8340
+      [15, 2, 5703, ParashaScheme.ISRAEL, "בהר"], // 8361
+      [15, 2, 5708, ParashaScheme.ISRAEL, "בחקתי"], // 8511
+      [15, 2, 5708, ParashaScheme.WORLD, "בהר"], // 8510
+      [15, 2, 5700, ParashaScheme.WORLD, "בחקתי"], // 8540
+      [15, 2, 5736, ParashaScheme.WORLD, "בהר"], // 8560
 
       [5, 2, 5734, ParashaScheme.WORLD, "תזריע - מצורע"], // 35540, offset char B
     ];

@@ -235,7 +235,7 @@ export class HDate extends JDate {
     yearType: HDateYearType;
   } {
     if (offsetBy) {
-      this.setHdn(this.getHdn() + (offsetBy ?? 0));
+      this.setHdn(this.getHdn() + offsetBy);
     }
     const hdn = this.getHdn();
 
