@@ -80,7 +80,7 @@ export class HDate extends JDate {
   }
 
   getMonthLength(): number {
-    return HDate.monthLength(this.year, this.month, this.yearType);
+    return HDate.monthLengthForType(this.year, this.month, this.yearType);
   }
 
   getNumberOfMonths(): number {
@@ -91,7 +91,11 @@ export class HDate extends JDate {
     return HDate.embolismicYear(hyear) ? 13 : 12;
   }
 
-  private static monthLength(
+  public static monthLength(hyear: number, month: HDateMonth): number {
+    return HDate.make(1, month, hyear).getMonthLength();
+  }
+
+  private static monthLengthForType(
     hyear: number,
     hmonth: HDateMonth,
     yearType: number
@@ -176,10 +180,10 @@ export class HDate extends JDate {
     if (month > nbMonths) month = nbMonths;
 
     while (hmonth != month) {
-      _hdn += HDate.monthLength(hyear, hmonth, yearType);
+      _hdn += HDate.monthLengthForType(hyear, hmonth, yearType);
       hmonth = hmonth + 1 > nbMonths ? 1 : hmonth + 1;
     }
-    const getMonthLength = HDate.monthLength(hyear, hmonth, yearType);
+    const getMonthLength = HDate.monthLengthForType(hyear, hmonth, yearType);
     if (day > getMonthLength) {
       day = getMonthLength;
     }

@@ -1,3 +1,4 @@
+export { Anniversary } from "./Anniversary";
 export { GDate } from "./GDate";
 export { HDate, HDateMonth } from "./HDate";
 export { Festival } from "./Festival";
