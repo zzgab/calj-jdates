@@ -112,7 +112,17 @@ export class Festival {
           FestivalType.SUCCOT,
           HDate.make(15, HDateMonth.TISHRI, hyear),
           HDate.make(22 + (israel ? 0 : 1), HDateMonth.TISHRI, hyear),
-          [true, !israel, false, false, false, false, false, true, !israel],
+          [
+            true,
+            !israel,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            ...(israel ? [] : [true]),
+          ],
           true
         )
     );
@@ -311,7 +321,16 @@ export class Festival {
         FestivalType.PESACH,
         hStart,
         hEnd,
-        [true, !israel, false, false, false, false, true, !israel],
+        [
+          true,
+          !israel,
+          false,
+          false,
+          false,
+          false,
+          true,
+          ...(israel ? [] : [true]),
+        ],
         true
       );
     });
@@ -355,15 +374,12 @@ export class Festival {
       hyear,
       ParashaScheme.WORLD,
       () => {
-        let h;
+        let h = HDate.make(5, HDateMonth.IYAR, hyear);
 
-        if (hyear == 5708 || hyear == 5710 || hyear == 5711) {
-          h = HDate.make(5, HDateMonth.IYAR, hyear);
-        } else {
-          h = HDate.make(5, HDateMonth.IYAR, hyear);
-          if (h.getDayOfWeek() == DayOfWeek.SHABBAT) {
+        if (hyear !== 5708 && hyear !== 5710 && hyear !== 5711) {
+          if (h.getDayOfWeek() === DayOfWeek.SHABBAT) {
             h = h.plus(-2);
-          } else if (h.getDayOfWeek() == DayOfWeek.SHISHI) {
+          } else if (h.getDayOfWeek() === DayOfWeek.SHISHI) {
             h = h.plus(-1);
           } else if (h.getDayOfWeek() == DayOfWeek.MONDAY) {
             //Si ça tombe un lundi, on reporte au mardi, car ferait un Zikaron le dimanche,
@@ -475,7 +491,7 @@ export class Festival {
         FestivalType.SHAVUOT,
         hStart,
         hEnd,
-        [true, !israel],
+        [true, ...(israel ? [] : [true])],
         true
       );
     });

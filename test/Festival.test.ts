@@ -17,11 +17,31 @@ describe("Festival", () => {
   });
 
   it("should calculate Succot", () => {
-    expect(
-      GDate.make(
-        Festival.succot(5789, ParashaScheme.ISRAEL).getStartDate()
-      ).toString()
-    ).toBe("2028-10-05");
+    const festival = Festival.succot(5789, ParashaScheme.ISRAEL);
+    expect(GDate.make(festival.getStartDate()).toString()).toBe("2028-10-05");
+
+    expect(festival.getYamimTovim()).toEqual([
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+    ]);
+
+    expect(Festival.succot(5789, ParashaScheme.WORLD).getYamimTovim()).toEqual([
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+    ]);
   });
 
   it("should calculate Pesach", () => {
@@ -93,5 +113,6 @@ describe("Festival", () => {
 
   it("should not have Yom HaAtsmaut before Hakamat Medina", () => {
     expect(Festival.yomHaAtsmaut(5700)).toBe(null);
+    expect(Festival.yomHaZicaron(5700)).toBe(null);
   });
 });
