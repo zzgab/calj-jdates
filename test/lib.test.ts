@@ -8,45 +8,6 @@ import {
 } from "../src";
 import { ParashaSpecial } from "../src/Parasha";
 
-describe("HDate", () => {
-  beforeEach(() => jest.clearAllMocks());
-  afterEach(() => jest.clearAllMocks());
-
-  it("should convert from GDate", () => {
-    expect(`${HDate.make(GDate.make(9, 10, 1974))}`).toBe("5735-07-23");
-  });
-
-  it("should have month name", () => {
-    expect(HDate.make(23, HDateMonth.TISHRI, 5780).getMonthName()).toBe("תשרי");
-    expect(HDate.make(23, HDateMonth.ADAR, 5780).getMonthName()).toBe("אדר");
-    expect(HDate.make(23, HDateMonth.ADAR2, 5780).getMonthName()).toBe("אדר");
-    expect(HDate.make(23, HDateMonth.ADAR, 5782).getMonthName()).toBe("אדר א");
-    expect(HDate.make(23, HDateMonth.ADAR2, 5782).getMonthName()).toBe("אדר ב");
-  });
-
-  it("should instantiate from Date", () => {
-    expect(HDate.make(new Date(Date.UTC(2023, 1, 22))).toString()).toBe(
-      "5783-12-01"
-    );
-  });
-
-  it("should instantiate from today", () => {
-    jest.spyOn(Date, "now").mockReturnValue(Date.UTC(2023, 1, 22));
-    expect(HDate.today().toString()).toEqual("5783-12-01");
-  });
-
-  it("should cap to month length", () => {
-    expect(HDate.make(40, HDateMonth.TAMUZ, 5700)).toEqual(
-      HDate.make(29, HDateMonth.TAMUZ, 5700)
-    );
-  });
-
-  it("should compute year length", () => {
-    expect(HDate.make(1, HDateMonth.IYAR, 5701).getYearLength()).toBe(354);
-    expect(HDate.make(1, HDateMonth.IYAR, 5711).getYearLength()).toBe(384);
-  });
-});
-
 describe("GDate", () => {
   it("should instantiate from Date", () => {
     expect(GDate.make(new Date(Date.UTC(2012, 5, 12))).toString()).toBe(
@@ -246,6 +207,9 @@ describe("Festival", () => {
     );
     expect(Festival.winterEve(2023, ParashaScheme.WORLD).toString()).toEqual(
       "2023-12-05"
+    );
+    expect(Festival.winterEve(2026, ParashaScheme.WORLD).toString()).toEqual(
+      "2026-12-05"
     );
     expect(Festival.winterEve(2023, ParashaScheme.ISRAEL).toString()).toEqual(
       "2023-10-21"

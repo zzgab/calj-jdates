@@ -602,7 +602,7 @@ export class Festival {
       );
     }
     let g = GDate.make(GDate.isLeapYear(gyear + 1) ? 5 : 4, 12, gyear);
-    if (g.getDayOfWeek() == DayOfWeek.SHISHI) {
+    if (g.getDayOfWeek() === DayOfWeek.SHISHI) {
       return g.plus(1);
     }
     return g;

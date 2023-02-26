@@ -200,11 +200,11 @@ export class HDate extends JDate {
     const parts = Tmolad - days * uday;
     const weekday = (1 + days) % 7;
 
-    let adu = weekday == 0 || weekday == 3 || weekday == 5;
+    let adu = weekday === 0 || weekday === 3 || weekday === 5;
     const gatarad =
-      !HDate.embolismicYear(hyear) && weekday == 2 && parts >= Tgatarad;
+      !HDate.embolismicYear(hyear) && weekday === 2 && parts >= Tgatarad;
     const betutkafot =
-      hyear != 1 &&
+      hyear !== 1 &&
       HDate.embolismicYear(hyear - 1) &&
       weekday == 1 &&
       parts >= Tbetutkafot;
@@ -212,7 +212,9 @@ export class HDate extends JDate {
     let zaken = false;
     if (!adu && !gatarad && !betutkafot) {
       zaken = parts >= Tzaken;
-      if (zaken) adu = weekday == 2 || weekday == 4 || weekday == 6;
+      if (zaken) {
+        adu = weekday === 2 || weekday === 4 || weekday === 6;
+      }
     }
 
     const lResult =
