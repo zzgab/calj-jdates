@@ -1,6 +1,6 @@
 {
   "name": "@calj.net/jdates",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The Jewish Dates library from https://CalJ.net",
   "homepage": "https://github.com/zzgab/calj-jdates",
   "scripts": {

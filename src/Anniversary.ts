@@ -1,15 +1,7 @@
 import { GDate } from "./GDate";
 import { HDate, HDateMonth } from "./HDate";
-
-export enum Rite {
-  SEFARADI,
-  ASHKENAZI,
-}
-
-export enum AnniversaryType {
-  BIRTHDAY,
-  AZCARA,
-}
+import { Rite } from "./Rite";
+import { AnniversaryType } from "./AnniversaryType";
 
 export class Anniversary {
   constructor(

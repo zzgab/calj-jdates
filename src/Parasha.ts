@@ -2,6 +2,7 @@ import { DayOfWeek, JDate } from "./JDate";
 import { HDate, HDateMonth } from "./HDate";
 import { Festival } from "./Festival";
 import { ParashaScheme } from "./ParashaScheme";
+import { Rite } from "./Rite";
 
 export enum ParashaSpecial {
   SHEQALIM = "SHEQALIM",
@@ -27,16 +28,17 @@ export class Parasha {
   private parshiot?: number[] | null;
   private festival?: Festival = undefined;
   private special?: ParashaSpecial;
-  private constructor(jdate: JDate, israel: ParashaScheme) {
-    this.compute(HDate.make(jdate), israel);
+  private constructor(jdate: JDate, private israel: ParashaScheme) {
+    const hdate = HDate.make(jdate);
+    const dow = hdate.getDayOfWeek();
+    this.shabbat = HDate.make(
+      dow === DayOfWeek.SHABBAT ? hdate : hdate.plus(DayOfWeek.SHABBAT - dow)
+    );
+    this.compute();
   }
 
-  private compute(hdate: HDate, israel: ParashaScheme): void {
-    if (hdate.getDayOfWeek() != DayOfWeek.SHABBAT) {
-      hdate = hdate.plus(DayOfWeek.SHABBAT - hdate.getDayOfWeek());
-    }
-
-    const HY = hdate.getYear();
+  private compute(): void {
+    const HY = this.shabbat.getYear();
     //We're going to compute the date of Bereshit:
     //The shabbat immediately following Simchat Torah.
 
@@ -46,15 +48,15 @@ export class Parasha {
     const hSTcandidate = HDate.make(23, HDateMonth.TISHRI, HY);
     //If we're querying the Parasha for a date between Rosh Hashana and Simchat Torah,
     //we need to rebase from previous Simchat Torah.
-    const hBereshit = hdate.lte(hSTcandidate)
+    const hBereshit = this.shabbat.lte(hSTcandidate)
       ? HDate.make(23, HDateMonth.TISHRI, HY - 1)
       : hSTcandidate;
-    const kevvia = Parasha.calcKevvia(hBereshit, israel);
+    const kevvia = Parasha.calcKevvia(hBereshit, this.israel);
 
     // n: number of full weeks between last time Bereshit was read, and this->hdate.
     // 0 means: this week's parasha is Bereshit!
     const n = Math.floor(
-      (hdate.minus(hBereshit) -
+      (this.shabbat.minus(hBereshit) -
         (DayOfWeek.SHABBAT - hBereshit.getDayOfWeek())) /
         7
     );
@@ -62,11 +64,11 @@ export class Parasha {
     this.parshiot = Parasha.getArrayParshiot(kevvia, n);
 
     if ((this.parshiot?.length ?? 0) === 0) {
-      this.festival = Festival.onDate(hdate, israel)[0];
+      this.festival = Festival.onDate(this.shabbat, this.israel)[0];
     }
 
     //Detect now if it is one of the 4 special parshiot:
-    this.computeSpecialParasha(hdate);
+    this.computeSpecialParasha(this.shabbat);
   }
 
   private static calcKevvia(hBereshit: HDate, israel: ParashaScheme): number {
@@ -248,17 +250,17 @@ export class Parasha {
     return Parasha.hebrewSidraNames[n];
   }
 
-  public getHebrewName(): string | undefined {
+  public getName(): string | undefined {
     if ((this.parshiot?.length ?? 0) == 0) {
       return undefined; // Holiday...
     }
 
+    const firstSidra = Parasha.getSidraHebrewName(this.parshiot![0]);
+
     if (this.parshiot!.length == 1) {
-      return Parasha.getSidraHebrewName(this.parshiot![0]);
+      return firstSidra;
     } else {
-      return `${Parasha.getSidraHebrewName(
-        this.parshiot![0]
-      )} - ${Parasha.getSidraHebrewName(this.parshiot![1])}`;
+      return `${firstSidra} - ${Parasha.getSidraHebrewName(this.parshiot![1])}`;
     }
   }
 
@@ -276,6 +278,29 @@ export class Parasha {
     }
     return;
   }
+
+  public getHaftara(rite: Rite): string {
+    const dow = this.shabbat.getDay();
+
+    if (dow === 1 || dow === 30) {
+      return "ראש חדש";
+    }
+    if (dow === 29) {
+      return "מחר חדש";
+    }
+
+    if (this.special) {
+      return this.getSpecialName()!;
+    }
+
+    if (this.parshiot?.length === 2) {
+      return Parasha.getSidraHebrewName(this.parshiot[1])!;
+    }
+
+    return this.getName() ?? this.getFestivalName()!;
+  }
+
+  private readonly shabbat: HDate;
 }
 
 const kevviotDna = [

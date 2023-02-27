@@ -1,5 +1,4 @@
-import { Anniversary } from "../src";
-import { AnniversaryType, Rite } from "../src/Anniversary";
+import { Anniversary, AnniversaryType, Rite } from "../src";
 
 describe("Anniversary class: Birthday", () => {
   it("should calculate any birthday", () => {
