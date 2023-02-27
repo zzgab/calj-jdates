@@ -44,6 +44,19 @@ describe("Festival", () => {
     ]);
   });
 
+  it("should calculate Shmini Atseret", () => {
+    expect(
+      GDate.make(
+        Festival.succot(5789, ParashaScheme.ISRAEL).getEndDate()
+      ).toString()
+    ).toBe("2028-10-12");
+    expect(
+      GDate.make(
+        Festival.succot(5789, ParashaScheme.WORLD).getEndDate()
+      ).toString()
+    ).toBe("2028-10-13");
+  });
+
   it("should calculate Pesach", () => {
     expect(
       GDate.make(
@@ -111,8 +124,25 @@ describe("Festival", () => {
     );
   });
 
-  it("should not have Yom HaAtsmaut before Hakamat Medina", () => {
-    expect(Festival.yomHaAtsmaut(5700)).toBe(null);
-    expect(Festival.yomHaZicaron(5700)).toBe(null);
+  describe("Yom HaAtsmaut", () => {
+    it("should not exist before Hakamat Medina", () => {
+      expect(Festival.yomHaAtsmaut(5700)).toBe(null);
+      expect(Festival.yomHaZicaron(5700)).toBe(null);
+    });
+    it("should have be advanced if Shabbat", () => {
+      expect(Festival.yomHaAtsmaut(5754).getStartDate().toString()).toBe(
+        "5754-02-03"
+      );
+    });
+    it("should have be advanced if Friday", () => {
+      expect(Festival.yomHaAtsmaut(5755).getStartDate().toString()).toBe(
+        "5755-02-04"
+      );
+    });
+    it("should have be postponed if Monday", () => {
+      expect(Festival.yomHaAtsmaut(5757).getStartDate().toString()).toBe(
+        "5757-02-06"
+      );
+    });
   });
 });

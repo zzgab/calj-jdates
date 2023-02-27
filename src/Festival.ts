@@ -156,7 +156,7 @@ export class Festival {
           FestivalType.SHMINI_ATSERET,
           HDate.make(22, HDateMonth.TISHRI, hyear),
           israel ? null : HDate.make(23, HDateMonth.TISHRI, hyear),
-          [true, !israel],
+          [true, ...(israel ? [true] : [])],
           true
         )
     );
