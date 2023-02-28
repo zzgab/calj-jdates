@@ -1,4 +1,4 @@
-import { GDate, HDate, HDateMonth, Parasha, ParashaScheme, Rite } from "../src";
+import { GDate, HDate, HDateMonth, Parasha, ParashaScheme } from "../src";
 import { ParashaSpecial } from "../src/Parasha";
 
 describe("Parasha", () => {
@@ -96,34 +96,40 @@ describe("Parasha", () => {
 
   describe("Haftarot", () => {
     it("should have shabbat rosh hodesh", () => {
-      expect(
-        Parasha.make(GDate.make(20, 4, 2023)).getHaftara(Rite.ASHKENAZI)
-      ).toBe("ראש חדש");
+      expect(Parasha.make(GDate.make(20, 4, 2023)).getHaftara()).toBe(
+        "ראש חדש"
+      );
     });
     it("should have ma'char hodesh", () => {
-      expect(
-        Parasha.make(GDate.make(20, 5, 2023)).getHaftara(Rite.ASHKENAZI)
-      ).toBe("מחר חדש");
+      expect(Parasha.make(GDate.make(20, 5, 2023)).getHaftara()).toBe(
+        "מחר חדש"
+      );
     });
     it("should have zachor", () => {
-      expect(
-        Parasha.make(GDate.make(27, 2, 2023)).getHaftara(Rite.ASHKENAZI)
-      ).toBe("זכור");
+      expect(Parasha.make(GDate.make(27, 2, 2023)).getHaftara()).toBe("זכור");
     });
     it("should have hachodesh", () => {
-      expect(
-        Parasha.make(GDate.make(13, 3, 2023)).getHaftara(Rite.ASHKENAZI)
-      ).toBe("החודש");
+      expect(Parasha.make(GDate.make(13, 3, 2023)).getHaftara()).toBe("החודש");
+    });
+    it("should have hagadol", () => {
+      expect(Parasha.make(GDate.make(30, 3, 2023)).getHaftara()).toBe("הגדול");
     });
     it("should have second haftara if mechubarin", () => {
+      expect(Parasha.make(GDate.make(25, 4, 2023)).getHaftara()).toBe("קדושים");
+    });
+    it("should have shabbat Hanouca", () => {
+      expect(Parasha.make(GDate.make(11, 12, 2020)).getHaftara()).toBe("חנוכה");
+    });
+    it("should have first and second shabbat Hanouca", () => {
       expect(
-        Parasha.make(GDate.make(25, 4, 2023)).getHaftara(Rite.ASHKENAZI)
-      ).toBe("קדושים");
+        Parasha.make(HDate.make(25, HDateMonth.KISLEV, 5713)).getHaftara()
+      ).toBe("חנוכה שבת ראשון");
+      expect(
+        Parasha.make(HDate.make(2, HDateMonth.TEVET, 5713)).getHaftara()
+      ).toBe("חנוכה שבת שני");
     });
     it("should have name of festival", () => {
-      expect(
-        Parasha.make(GDate.make(6, 4, 2023)).getHaftara(Rite.ASHKENAZI)
-      ).toBe("פסח");
+      expect(Parasha.make(GDate.make(6, 4, 2023)).getHaftara()).toBe("פסח");
     });
   });
 });

@@ -2,7 +2,6 @@ import { DayOfWeek, JDate } from "./JDate";
 import { HDate, HDateMonth } from "./HDate";
 import { Festival } from "./Festival";
 import { ParashaScheme } from "./ParashaScheme";
-import { Rite } from "./Rite";
 
 export enum ParashaSpecial {
   SHEQALIM = "SHEQALIM",
@@ -279,8 +278,19 @@ export class Parasha {
     return;
   }
 
-  public getHaftara(rite: Rite): string {
+  public getHaftara(): string {
     const dow = this.shabbat.getDay();
+
+    if (Festival.chanuka(this.shabbat.getYear()).contains(this.shabbat)) {
+      // If 25 Kislev is Shabbat, then necessarily Kislev has 30 days.
+      if (this.shabbat.getDay() === 25) {
+        return "חנוכה שבת ראשון";
+      }
+      if (this.shabbat.getDay() === 2) {
+        return "חנוכה שבת שני";
+      }
+      return "חנוכה";
+    }
 
     if (dow === 1 || dow === 30) {
       return "ראש חדש";
