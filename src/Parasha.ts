@@ -2,6 +2,7 @@ import { DayOfWeek, JDate } from "./JDate";
 import { HDate, HDateMonth } from "./HDate";
 import { Festival } from "./Festival";
 import { ParashaScheme } from "./ParashaScheme";
+import { Sidra, sidrot } from "./Sidra";
 
 export enum ParashaSpecial {
   SHEQALIM = "SHEQALIM",
@@ -10,14 +11,6 @@ export enum ParashaSpecial {
   HACHODESH = "HACHODESH",
   HAGADOL = "HAGADOL",
 }
-
-const specialParashaNames: Record<ParashaSpecial, string> = {
-  [ParashaSpecial.SHEQALIM]: "שקלים",
-  [ParashaSpecial.ZACHOR]: "זכור",
-  [ParashaSpecial.PARAH]: "פרה",
-  [ParashaSpecial.HACHODESH]: "החודש",
-  [ParashaSpecial.HAGADOL]: "הגדול",
-};
 
 export class Parasha {
   public static make(jdate: JDate, israel?: ParashaScheme) {
@@ -188,87 +181,17 @@ export class Parasha {
     }
   }
 
-  private static hebrewSidraNames = [
-    "בראשית",
-    "נח",
-    "לך לך",
-    "וירא",
-    "חיי-שרה",
-    "תולדות",
-    "ויצא",
-    "וישלח",
-    "וישב",
-    "מקץ",
-    "ויגש",
-    "ויחי",
-    "שמות",
-    "וארא",
-    "בא",
-    "בשלח",
-    "יתרו",
-    "משפטים",
-    "תרומה",
-    "תצוה",
-    "כי-תשא",
-    "ויקהל",
-    "פקודי",
-    "ויקרא",
-    "צו",
-    "שמיני",
-    "תזריע",
-    "מצורע",
-    "אחרי מות",
-    "קדושים",
-    "אמור",
-    "בהר",
-    "בחקתי",
-    "במדבר",
-    "נשא",
-    "בהעלתך",
-    "שלח",
-    "קרח",
-    "חקת",
-    "בלק",
-    "פינחס",
-    "מטות",
-    "מסעי",
-    "דברים",
-    "ואתחנן",
-    "עקב",
-    "ראה",
-    "שפטים",
-    "כי-תצא",
-    "כי-תבוא",
-    "נצבים",
-    "וילך",
-    "האזינו",
-    "וזאת-הברכה",
-  ] as const;
-
-  public static getSidraHebrewName(n: number): string | undefined {
-    return Parasha.hebrewSidraNames[n];
-  }
-
-  public getName(): string | undefined {
-    if ((this.parshiot?.length ?? 0) == 0) {
-      return undefined; // Holiday...
-    }
-
-    const firstSidra = Parasha.getSidraHebrewName(this.parshiot![0]);
-
-    if (this.parshiot!.length == 1) {
-      return firstSidra;
-    } else {
-      return `${firstSidra} - ${Parasha.getSidraHebrewName(this.parshiot![1])}`;
-    }
+  public getSidra(): Sidra[] | undefined {
+    return this.parshiot
+      ? [
+          sidrot[this.parshiot[0]],
+          ...(this.parshiot.length === 2 ? [sidrot[this.parshiot[1]]] : []),
+        ]
+      : undefined;
   }
 
   public getSpecial(): ParashaSpecial | undefined {
     return this.special;
-  }
-
-  public getSpecialName(): string | undefined {
-    return this.special && specialParashaNames[this.special];
   }
 
   public getFestivalName(): string | undefined {
@@ -278,7 +201,7 @@ export class Parasha {
     return;
   }
 
-  public getHaftara(): string {
+  public getHaftara(): string | Sidra {
     const dow = this.shabbat.getDay();
 
     if (Festival.chanuka(this.shabbat.getYear()).contains(this.shabbat)) {
@@ -300,14 +223,17 @@ export class Parasha {
     }
 
     if (this.special) {
-      return this.getSpecialName()!;
+      return this.special;
     }
 
     if (this.parshiot?.length === 2) {
-      return Parasha.getSidraHebrewName(this.parshiot[1])!;
+      return sidrot[this.parshiot[1]];
+    }
+    if (this.parshiot?.length === 1) {
+      return sidrot[this.parshiot[0]];
     }
 
-    return this.getName() ?? this.getFestivalName()!;
+    return this.getFestivalName()!;
   }
 
   private readonly shabbat: HDate;

@@ -1,5 +1,9 @@
 import { GDate, HDate, HDateMonth, Parasha, ParashaScheme } from "../src";
 import { ParashaSpecial } from "../src/Parasha";
+import { HebrewParashaLocalizer } from "../src/HebrewParashaLocalizer";
+
+const getName = (parasha: Parasha) =>
+  new HebrewParashaLocalizer().sidra(parasha.getSidra());
 
 describe("Parasha", () => {
   it("should calculate the kevviot", () => {
@@ -22,54 +26,53 @@ describe("Parasha", () => {
 
     data.forEach(([day, month, year, scheme, parasha]) =>
       expect(
-        Parasha.make(HDate.make(day, month, year), scheme).getName()
+        getName(Parasha.make(HDate.make(day, month, year), scheme))
       ).toEqual(parasha)
     );
   });
 
   it("should have special parasha", () => {
     const parasha = Parasha.make(GDate.make(2, 3, 2023), ParashaScheme.WORLD);
-    expect(parasha.getSpecialName()).toEqual("זכור");
+    expect(new HebrewParashaLocalizer().special(parasha.getSpecial())).toEqual(
+      "זכור"
+    );
     expect(parasha.getSpecial()).toBe(ParashaSpecial.ZACHOR);
 
+    const loc = new HebrewParashaLocalizer();
     expect(
-      Parasha.make(
-        GDate.make(9, 3, 2023),
-        ParashaScheme.ISRAEL
-      ).getSpecialName()
+      loc.special(
+        Parasha.make(GDate.make(9, 3, 2023), ParashaScheme.ISRAEL).getSpecial()
+      )
     ).toBe("פרה");
 
     expect(
-      Parasha.make(
-        GDate.make(16, 3, 2023),
-        ParashaScheme.ISRAEL
-      ).getSpecialName()
+      loc.special(
+        Parasha.make(GDate.make(16, 3, 2023), ParashaScheme.ISRAEL).getSpecial()
+      )
     ).toBe("החודש");
 
     expect(
-      Parasha.make(
-        GDate.make(30, 3, 2023),
-        ParashaScheme.ISRAEL
-      ).getSpecialName()
+      loc.special(
+        Parasha.make(GDate.make(30, 3, 2023), ParashaScheme.ISRAEL).getSpecial()
+      )
     ).toBe("הגדול");
 
     expect(
-      Parasha.make(
-        GDate.make(15, 2, 2023),
-        ParashaScheme.ISRAEL
-      ).getSpecialName()
+      loc.special(
+        Parasha.make(GDate.make(15, 2, 2023), ParashaScheme.ISRAEL).getSpecial()
+      )
     ).toBe("שקלים");
   });
 
   it("should have holiday name Pesach", () => {
     const parasha = Parasha.make(HDate.make(16, HDateMonth.NISSAN, 5760));
-    expect(parasha.getName()).toBe(undefined);
+    expect(getName(parasha)).toEqual("");
     expect(parasha.getFestivalName()).toBe("פסח");
   });
 
   it("should have holiday name Shavuot in Chul", () => {
     const parasha = Parasha.make(HDate.make(7, HDateMonth.SIVAN, 5783));
-    expect(parasha.getName()).toBe(undefined);
+    expect(getName(parasha)).toEqual("");
     expect(parasha.getFestivalName()).toBe("שבועות");
   });
 
@@ -78,20 +81,22 @@ describe("Parasha", () => {
       HDate.make(7, HDateMonth.SIVAN, 5783),
       ParashaScheme.ISRAEL
     );
-    expect(parasha.getName()).toBe("נשא");
+    expect(getName(parasha)).toBe("נשא");
     expect(parasha.getFestivalName()).toBe(undefined);
   });
 
   it("should calculate a parasha in Tishri before Bereshit", () => {
-    expect(Parasha.make(HDate.make(1, HDateMonth.TISHRI, 5779)).getName()).toBe(
+    expect(getName(Parasha.make(HDate.make(1, HDateMonth.TISHRI, 5779)))).toBe(
       "וילך"
     );
   });
 
   it("should handle special parashiot if 1st Adar is shabbat", () => {
-    expect(Parasha.make(GDate.make(27, 2, 2025)).getSpecialName()).toBe(
-      "שקלים"
-    );
+    const specialName = (special: ParashaSpecial) =>
+      new HebrewParashaLocalizer().special(special);
+    expect(
+      specialName(Parasha.make(GDate.make(27, 2, 2025)).getSpecial())
+    ).toBe("שקלים");
   });
 
   describe("Haftarot", () => {
@@ -106,13 +111,19 @@ describe("Parasha", () => {
       );
     });
     it("should have zachor", () => {
-      expect(Parasha.make(GDate.make(27, 2, 2023)).getHaftara()).toBe("זכור");
+      expect(Parasha.make(GDate.make(27, 2, 2023)).getHaftara()).toBe(
+        ParashaSpecial.ZACHOR
+      );
     });
     it("should have hachodesh", () => {
-      expect(Parasha.make(GDate.make(13, 3, 2023)).getHaftara()).toBe("החודש");
+      expect(Parasha.make(GDate.make(13, 3, 2023)).getHaftara()).toBe(
+        ParashaSpecial.HACHODESH
+      );
     });
     it("should have hagadol", () => {
-      expect(Parasha.make(GDate.make(30, 3, 2023)).getHaftara()).toBe("הגדול");
+      expect(Parasha.make(GDate.make(30, 3, 2023)).getHaftara()).toBe(
+        ParashaSpecial.HAGADOL
+      );
     });
     it("should have second haftara if mechubarin", () => {
       expect(Parasha.make(GDate.make(25, 4, 2023)).getHaftara()).toBe("קדושים");

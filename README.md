@@ -12,21 +12,21 @@ The Jewish dates toolbox used on [https://calj.net](https://calj.net).
 ## Modes
 The library can be used in [Node](https://www.npmjs.com/package/@calj.net/jdates) (both **ESM** and **CommonJS**) and in the [browser](https://cdn.jsdelivr.net/npm/@calj.net/jdates):
 
-### Node
+### Node ESM
 
-~~~
+~~~js
 import { GDate, HDate, Festival, Parasha } from "@calj.net/jdates";
+~~~
 
-// or
+### Node CommonJS
 
+~~~js
 const { GDate, HDate, Festival, Parasha } = require("@calj.net/jdates");
 ~~~
 
 ### Browser
 
-~~~
-<html>
-  <!-- This script installs the lib in window.CalJ -->
+~~~html
   <script
     src="https://cdn.jsdelivr.net/npm/@calj.net/jdates">
   </script>
@@ -37,24 +37,26 @@ const { GDate, HDate, Festival, Parasha } = require("@calj.net/jdates");
       GDate,
       HDate,
       Parasha,
-      ParashaScheme
     } = CalJ;
-    
-    console.log("This week's Parasha in Israel:",
-      Parasha.make(
-        GDate.today(), ParashaScheme.ISRAEL
-      ).getHebrewName()
-    );
-
-    const h = HDate.make(GDate.make(9, 2, 2023));
-    console.log("9 Feb 2023 is: ",
-      `${h.getDay()} ${h.getMonthName()} ${h.getYear()}`);
-
-    const yomKippur = Festival.yomKippur(5780);
-    const gYomKippur = GDate.make(yomKippur.getStartDate());
-    console.log("Yom Kippur 5780 is: ", `${gYomKippur}`);
   </script>
-</html>
+~~~
+
+## Examples
+
+~~~js
+console.log("This week's Parasha in Israel:",
+  new HebrewParashaLocalizer().sidra(Parasha.make(
+    GDate.today(), ParashaScheme.ISRAEL
+  ))
+);
+
+const h = HDate.make(GDate.make(9, 2, 2023));
+console.log("9 Feb 2023 is: ",
+  `${h.getDay()} ${h.getMonthName()} ${h.getYear()}`);
+
+const yomKippur = Festival.yomKippur(5780);
+const gYomKippur = GDate.make(yomKippur.getStartDate());
+console.log("Yom Kippur 5780 is: ", `${gYomKippur}`);
 ~~~
 
 ## API
