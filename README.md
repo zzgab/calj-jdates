@@ -1,5 +1,5 @@
 # @calj.net/jdates
-![npm version](https://img.shields.io/badge/dynamic/json?logo=npm&url=https://registry.npmjs.org/-/package/@calj.net/jdates/dist-tags&label=npm&color=success&query=$.latest)
+[![npm version](https://img.shields.io/badge/dynamic/json?logo=npm&url=https://registry.npmjs.org/-/package/@calj.net/jdates/dist-tags&label=npm&color=success&query=$.latest)](https://www.npmjs.com/package/@calj.net/jdates)
 
 The Jewish dates toolbox used on [https://calj.net](https://calj.net).
 - Manipulate Jewish and Gregorian dates
@@ -27,18 +27,18 @@ const { GDate, HDate, Festival, Parasha } = require("@calj.net/jdates");
 ### Browser
 
 ~~~html
-  <script
-    src="https://cdn.jsdelivr.net/npm/@calj.net/jdates">
-  </script>
+<script
+src="https://cdn.jsdelivr.net/npm/@calj.net/jdates">
+</script>
 
-  <script>
-    const {
-      Festival,
-      GDate,
-      HDate,
-      Parasha,
-    } = CalJ;
-  </script>
+<script>
+const {
+  Festival,
+  GDate,
+  HDate,
+  Parasha,
+} = CalJ;
+</script>
 ~~~
 
 ## Examples
